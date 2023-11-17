@@ -4,4 +4,8 @@ parameters:
 database:
 	dsn: 'sqlite::memory:'
 	user:
+<<<<<<< HEAD
 	password:
+=======
+	password:
+>>>>>>> 904ed24 (debugger enable)
