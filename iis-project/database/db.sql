@@ -61,6 +61,3 @@ CREATE TABLE 'UserSystems' (
     CONSTRAINT 'fk_user' FOREIGN KEY ('user_id') REFERENCES 'Users'('user_id') ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT 'fk_system'FOREIGN KEY ('system_id') REFERENCES 'Systems'('system_id') ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-INSERT INTO Users (username, password, role) VALUES ('john_doe', 'password123', 'admin');
-INSERT INTO Users (username, password, role) VALUES ('alice_smith', 'pass456', 'registered');
