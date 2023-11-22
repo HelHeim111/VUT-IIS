@@ -1,4 +1,9 @@
-
 {block content}
-    <h2>Home</h2>
+    <h1>Users list</h1>
+    <ul>
+        {foreach $items as $item}
+            <li>{$item->username}</li>
+        {/foreach}
+    </ul>
+    <a n:href="Signin:default">ABOBA</a>
 {/block}
