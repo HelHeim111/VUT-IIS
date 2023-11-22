@@ -1,9 +1,54 @@
 {block content}
-    <h1>Users list</h1>
-    <ul>
-        {foreach $items as $item}
-            <li>{$item->username}</li>
-        {/foreach}
-    </ul>
-    <a n:href="Signin:default">ABOBA</a>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>IIS Devices</title>
+        <link rel="stylesheet" type="text/css" href="{$basePath}/assets/css/styles.css">
+    </head>
+
+    <body>
+        <header>
+            <div class="logo">
+                <a href="{link Homepage:default}">
+                    Home
+                </a>
+            </div>
+            <div class="login-button" style="float: right; margin-top: -15px;">
+                <a href="{link Signin:default}">
+                    Login
+                </a>
+            </div>
+        </header>
+
+        <main>
+            <h1>Welcome!</h1>
+            <div id="system-list">
+                <h2>System List</h2>
+                <div class="scrollable-list">
+                    {if $systems}
+                        {foreach $systems as $system}
+                            <div class="system-item">
+                                <strong>{$system->system_name}</strong> - Owned by: {$system->admin->username}
+                            </div>
+                        {/foreach}
+                    {else}
+                        <p>No systems available.</p>
+                    {/if}
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <p>&copy; 2023 Your Website. All rights reserved.</p>
+                <nav>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </footer>
+    </body>
 {/block}

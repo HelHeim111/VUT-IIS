@@ -18,6 +18,9 @@ class HomePresenter extends Nette\Application\UI\Presenter
 
     public function renderDefault()
     {
-        $this->template->items = $this->database->table('Users')->limit(10);
+        $systems = $this->database->table('Systems')->fetchAll();
+
+        // Pass the $systems variable to the template
+        $this->template->systems = $systems;
     }
 }
