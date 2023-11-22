@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS `Users`;
 CREATE TABLE `Users` (
     `user_id` INT PRIMARY KEY AUTO_INCREMENT,
     `username` VARCHAR(32) NOT NULL,
-    `password` VARCHAR(32) NOT NULL,
+    `password` VARCHAR(128) NOT NULL,
     `role` VARCHAR(32) NOT NULL
 );
 

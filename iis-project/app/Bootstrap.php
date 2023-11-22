@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App;
 
 use Nette\Bootstrap\Configurator;
+use Tracy\Debugger;
+use Tracy\IBarPanel;
 
 
 class Bootstrap
 {
 	public static function boot(): Configurator
 	{
+		Debugger::enable();
 		$configurator = new Configurator;
 		$appDir = dirname(__DIR__);
 
