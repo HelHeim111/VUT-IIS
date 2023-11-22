@@ -1,9 +1,16 @@
 parameters:
 
+
 database:
     dsn: 'mysql:host=localhost;dbname=iis_db'
     user: newuser
     password: password
+
+
+services:
+    - App\Security\Authenticator
+
+
 
 
 application:

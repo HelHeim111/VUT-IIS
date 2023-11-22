@@ -13,6 +13,7 @@ final class SigninFormFactory
     use Nette\SmartObject;
 
     private $user;
+
     public function __construct(User $user)
     {
         $this->user = $user;
@@ -21,23 +22,25 @@ final class SigninFormFactory
     public function create(callable $onSuccess): Form
     {
         $form = new Form();
-        $form->addText('username', 'Uživatelské jméno')
-            ->setRequired(true);
+        $form->addText('username', 'Uživatelské jméno:')
+            ->setRequired('Prosím zadejte uživatelské jméno.');
         $form->addPassword('password', 'Heslo:')
-            ->setRequired(true);
+            ->setRequired('Prosím zadejte heslo.');
         $form->addSubmit('send', 'Přihlásit se')
             ->setHtmlAttribute('class', 'submit');
-        $form->onSuccess[] = function (Form $form, \stdClass $values) use ($onSuccess): void{
+
+        $form->onSuccess[] = function (Form $form, \stdClass $values) use ($onSuccess): void {
             try {
                 $this->user->setExpiration('2 hours');
                 $this->user->login($values->username, $values->password);
             } catch (Nette\Security\AuthenticationException $e) {
-                $form->addError("Nespravné uživatelské jméno nebo heslo.");
+                $form->addError('Nesprávné uživatelské jméno nebo heslo.');
                 return;
             }
-          $onSuccess();
+
+            $onSuccess();
         };
+
         return $form;
     }
 }
-
