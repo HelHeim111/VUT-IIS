@@ -1,9 +1,9 @@
-
 {block content}
-<<<<<<< HEAD
-    <h1>Hello, World!</h1>
+    <h1>Users list</h1>
+    <ul>
+        {foreach $items as $item}
+            <li>{$item->username}</li>
+        {/foreach}
+    </ul>
+    <a n:href="Signin:default">ABOBA</a>
 {/block}
-=======
-
-<h2>Home</h2>
->>>>>>> e85a787e9aca7cf80da12e5b222b4a0d8c929470
