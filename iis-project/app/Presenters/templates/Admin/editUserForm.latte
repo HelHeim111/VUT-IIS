@@ -1,0 +1,39 @@
+{block title}Edit User{/block}
+
+{block content}
+    <h1>Edit User</h1>
+    
+    {if $form->hasErrors()}
+        <ul class="errors">
+            {foreach $form->errors as $error}
+                <li>{$error}</li>
+            {/foreach}
+        </ul>
+    {/if}
+
+    <form method="post">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value="{$form['username']->value}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
+        </div>
+
+        <div class="form-group">
+            <label for="role">Role:</label>
+            <select id="role" name="role">
+                <option value="user" n:if="$form['role']->value === 'user'" selected>User</option>
+                <option value="admin" n:if="$form['role']->value === 'admin'" selected>Admin</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Save Changes">
+        </div>
+    </form>
+
+    <a href="{link Admin:dashboard}">Back to Dashboard</a>
+</block>

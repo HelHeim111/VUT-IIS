@@ -1,6 +1,33 @@
 {block title}Admin Dashboard{/block}
 
 {block content}
-<h1>Admin Dashboard</h1>
-<p>Welcome to the admin dashboard!</p>
+    <h1>Admin Dashboard</h1>
+    <p>Vítejte na administračním dashboardu!</p>
+
+    <div class="user-info" style="float: right; margin-top: -15px;">
+        <span>Vítejte, {$user->getIdentity()->username}</span>
+        <a href="{link Signout:default}">Odhlásit se</a>
+    </div>
+
+    {control createUserForm}
+
+    <table>
+        <tr>
+            <th>Uživatelské jméno</th>
+            <th>user_id</th> <!-- Add user_id column -->
+            <th>Role</th>   <!-- Add Role column -->
+            <th>Akce</th>
+        </tr>
+        {foreach $users as $userItem}
+            <tr>
+                <td>{$userItem->username}</td>
+                <td>{$userItem->user_id}</td> <!-- Display user_id -->
+                <td>{$userItem->role}</td>   <!-- Display Role -->
+                <td>
+                    <a href="{link editUserForm, $userItem->user_id}">Upravit</a>
+                    <a href="{link delete, $userItem->user_id}" onclick="return confirm('Opravdu chcete smazat tohoto uživatele?');">Smazat</a>
+                </td>
+            </tr>
+        {/foreach}
+    </table>
 {/block}
