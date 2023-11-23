@@ -1,19 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{ifset $title}{$title}{else}Hell Yeah{/ifset}</title>
+       <style>
+        body {
+            background-color: #1a1a1a; /* Dark background color */
+            color: #ff3333; /* Fiery red text color */
+            font-family: 'Creepster', cursive; /* Eerie font */
+            margin: 0;
+            padding: 0;
+        }
 
-	<title>{ifset title}{include title|stripHtml} | {/ifset}Nette Web</title>
+        header {
+            background-color: #1a1a1a;
+            padding: 20px;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #1a1a1a;
+            text-align: center;
+            padding: 10px;
+        }
+
+        nav a {
+            color: #ff3333;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        main {
+            background-color: #222222; /* Dark gray content background */
+            padding: 20px;
+        }
+
+        footer {
+            background-color: #1a1a1a;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+        }
+    </style>
 </head>
-
 <body>
-	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+    <header>
+        <h1>Welcome to the Gym</h1>
+    </header>
 
-	{include content}
+    <nav>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+    </nav>
 
-	{block scripts}
-	<script src="https://unpkg.com/nette-forms@3/src/assets/netteForms.js"></script>
-	{/block}
+    <main>
+        {block content}
+        <p>Welcome to the darkest depths of the web.</p>
+        {/block}
+    </main>
+
+    <footer>
+        &copy; {= date('Y') } Hellish Website. All souls reserved.
+    </footer>
 </body>
 </html>

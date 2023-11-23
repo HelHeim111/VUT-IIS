@@ -1,35 +1,97 @@
+{extends '../@layout.latte'}
+
 {block content}
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>IIS Devices</title>
+        <title>IIS Devices from Hell</title>
         <link rel="stylesheet" type="text/css" href="{$basePath}/assets/css/styles.css">
+        <style>
+            body {
+                background-color: #1a0000;
+                color: #ff5733;
+                font-family: 'Times New Roman', serif;
+            }
+
+            header {
+                max-width: 1200px;
+                margin: 0 auto;
+                height: 100px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border: 2px solid #ff5733;
+                padding: 10px;
+                background-color: #1a0000;
+            }
+
+            header .logo a {
+                padding: 10px;
+                background-color: #ff5733;
+                color: #fff;
+                text-decoration: none;
+                border-radius: 5px;
+                font-size: 18px;
+            }
+
+            main {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #1a0000;
+                box-shadow: 0 0 10px rgba(255, 87, 51, 0.5);
+            }
+
+            h1 {
+                color: #ff5733;
+            }
+
+            .system-item {
+                color: #ff5733;
+            }
+
+            footer {
+                background-color: #1a0000;
+                color: #ff5733;
+                text-align: center;
+                padding: 10px;
+                font-size: 14px;
+                border-top: 1px solid #ff5733;
+            }
+
+            footer a {
+                color: #ff5733;
+                text-decoration: none;
+            }
+        </style>
     </head>
 
     <body>
         <header>
             <div class="logo">
-                <a href="{link Home:default}">Home</a>
+                {if $user->isInRole('admin')}
+                    <a href="{link Admin:dashboard}">Admin Dashboard from Hell</a>
+                {/if}
             </div>
             {if !$user->isLoggedIn()}
-                <div class="signin-button" style="float: right; margin-top: -15px;">
+                <div class="signin-button">
                     <a href="{link Signin:default}">Login</a>
                 </div>
-                <div class="signup-button" style="float: right; margin-right: 15px; margin-top: -15px;">
+                <div class="signup-button">
                     <a href="{link Signup:default}">Register</a>
                 </div>
             {else}
-                <div class="user-info" style="float: right; margin-top: -15px;">
-                    <span>Vítejte, {$user->getIdentity()->username}</span>
+                <div class="user-info">
+                    <span style="color: #ff5733;">Vítejte, {$user->getIdentity()->username}</span>
                     <a href="{link Signout:default}">Odhlásit se</a>
                 </div>
             {/if}
         </header>
 
         <main>
-            <h1>Welcome!</h1>
+            <h1>Welcome to the Hellish Devices!</h1>
             <div id="system-list">
-                <h2>System List</h2>
+                <h2>System List from the Abyss</h2>
                 <div class="scrollable-list">
                     {if $systems}
                         {foreach $systems as $system}
@@ -38,7 +100,7 @@
                             </div>
                         {/foreach}
                     {else}
-                        <p>No systems available.</p>
+                        <p>No systems available in this Desolation.</p>
                     {/if}
                 </div>
             </div>
@@ -46,12 +108,12 @@
 
         <footer>
             <div class="footer-content">
-                <p>&copy; 2023 Your Website. All rights reserved.</p>
+                <p>&copy; 2023 Hellish Devices from Beyond. All rights damned.</p>
                 <nav>
                     <ul>
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/about">About Us</a></li>
-                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="/">Hell</a></li>
+                        <li><a href="/about">About the Abyss</a></li>
+                        <li><a href="/contact">Contact the Damned</a></li>
                     </ul>
                 </nav>
             </div>
