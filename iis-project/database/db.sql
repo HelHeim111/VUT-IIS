@@ -68,8 +68,9 @@ CREATE TABLE `UserSystems` (
     CONSTRAINT `fk_system` FOREIGN KEY (`system_id`) REFERENCES `Systems`(`system_id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO `Users` (username, password, role) VALUES ('john_doe', 'password123', 'admin');
-INSERT INTO `Users` (username, password, role) VALUES ('alice_smith', 'pass456', 'registered');
+INSERT INTO `Users` (username, password, role) VALUES ('admin', '$2y$10$eStqgge8bpW6nMQ3kV6vOu1K1YuvZ83vAGACECiWBjaJBC2UKX4Ly', 'admin');
+INSERT INTO `Users` (username, password, role) VALUES ('Abobus', '$2y$10$BhhhsySPfuOxQMXQUd8ceeeJwm3DiM89TMtXVablnYxWn359I4CKG', 'user');
+INSERT INTO `Users` (username, password, role) VALUES ('Amogus', '$2y$10$qJHIxAuax0ML3oBriP4f3OL.oF8TKKUNjJB7ORKQRFSQU6DcqMhRq', 'user');
 
 INSERT INTO `DeviceTypes` (type_name, description) VALUES ('Thermometer', 'Measures temperature');
 INSERT INTO `DeviceTypes` (type_name, description) VALUES ('Humidity Sensor', 'Measures humidity levels');
@@ -77,17 +78,17 @@ INSERT INTO `DeviceTypes` (type_name, description) VALUES ('Humidity Sensor', 'M
 INSERT INTO `Parameters` (parameter_name, parameter_values) VALUES ('Temperature', 'Celsius, Fahrenheit');
 INSERT INTO `Parameters` (parameter_name, parameter_values) VALUES ('Humidity', 'Percentage');
 
-INSERT INTO `Systems` (system_name, system_description, admin_id) VALUES ('SmartHome', 'Home automation system', 1);
-INSERT INTO `Systems` (system_name, system_description, admin_id) VALUES ('OfficeMonitor', 'Office environment monitoring', 2);
+INSERT INTO `Systems` (system_name, system_description, admin_id) VALUES ('SmartHome', 'Home automation system', 2);
+INSERT INTO `Systems` (system_name, system_description, admin_id) VALUES ('OfficeMonitor', 'Office environment monitoring', 3);
 
 INSERT INTO `KPIs` (kpi_name, parameter_id, output) VALUES ('Temperature_OK', 1, 1);
 INSERT INTO `KPIs` (kpi_name, parameter_id, output) VALUES ('Humidity_OK', 2, 1);
 
-INSERT INTO `Devices` (device_name, device_type_id, description, user_id) VALUES ('LivingRoomThermometer', 1, 'Measures temperature in the living room', 1);
-INSERT INTO `Devices` (device_name, device_type_id, description, user_id) VALUES ('OfficeHumiditySensor', 2, 'Monitors humidity in the office', 2);
+INSERT INTO `Devices` (device_name, device_type_id, description, user_id) VALUES ('LivingRoomThermometer', 1, 'Measures temperature in the living room', 2);
+INSERT INTO `Devices` (device_name, device_type_id, description, user_id) VALUES ('OfficeHumiditySensor', 2, 'Monitors humidity in the office', 3);
 
 INSERT INTO `DeviceTypesParameters` (device_type_id, parameter_id) VALUES (1, 1);
 INSERT INTO `DeviceTypesParameters` (device_type_id, parameter_id) VALUES (2, 2);
 
-INSERT INTO `UserSystems` (user_id, system_id) VALUES (1, 1);
-INSERT INTO `UserSystems` (user_id, system_id) VALUES (2, 2);
+INSERT INTO `UserSystems` (user_id, system_id) VALUES (2, 1);
+INSERT INTO `UserSystems` (user_id, system_id) VALUES (3, 2);

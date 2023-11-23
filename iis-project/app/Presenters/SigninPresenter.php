@@ -22,11 +22,17 @@ final class SigninPresenter extends Nette\Application\UI\Presenter
 
     protected function createComponentSigninForm(): Form
     {
-        return $this->signinFactory->create(function (): void {
-            $this->restoreRequest($this->backlink);
-            $this->redirect('Home:default');
+        $form = $this->signinFactory->create(function (): void {
+            $this->user->isLoggedIn(); // Проверка, что пользователь вошел
+            if ($this->user->isInRole('admin')) {
+                $this->redirect('Admin:dashboard');
+            } else {
+                $this->redirect('Home:default');
+            }
         });
-    }
+    
+        return $form;
+    }    
 
     public function processForm(Form $form, array $values) : void
     {

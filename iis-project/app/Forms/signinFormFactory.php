@@ -33,12 +33,12 @@ final class SigninFormFactory
             try {
                 $this->user->setExpiration('2 hours');
                 $this->user->login($values->username, $values->password);
+                $role = $this->user->getIdentity()->role;
+                $onSuccess($role);
             } catch (Nette\Security\AuthenticationException $e) {
                 $form->addError('Nesprávné uživatelské jméno nebo heslo.');
                 return;
             }
-
-            $onSuccess();
         };
 
         return $form;

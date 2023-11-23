@@ -18,6 +18,8 @@ final class RouterFactory
         $router->addRoute('signin', 'Signin:default');
 		$router->addRoute('<presenter>/<action>[/<id>]', 'Home:default');
 		$router->addRoute('signup', 'Signup:default');
+		$router->addRoute('admin/dashboard', 'Admin:dashboard');
+		$router->addRoute('signout', 'Signout:default');
 		return $router;
 	}
 }

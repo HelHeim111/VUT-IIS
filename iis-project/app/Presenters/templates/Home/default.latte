@@ -9,15 +9,21 @@
     <body>
         <header>
             <div class="logo">
-                <a href="{link Home:default}">
-                    Home
-                </a>
+                <a href="{link Home:default}">Home</a>
             </div>
-            <div class="login-button" style="float: right; margin-top: -15px;">
-                <a href="{link Signin:default}">
-                    Login
-                </a>
-            </div>
+            {if !$user->isLoggedIn()}
+                <div class="signin-button" style="float: right; margin-top: -15px;">
+                    <a href="{link Signin:default}">Login</a>
+                </div>
+                <div class="signup-button" style="float: right; margin-right: 15px; margin-top: -15px;">
+                    <a href="{link Signup:default}">Register</a>
+                </div>
+            {else}
+                <div class="user-info" style="float: right; margin-top: -15px;">
+                    <span>Vítejte, {$user->getIdentity()->username}</span>
+                    <a href="{link Signout:default}">Odhlásit se</a>
+                </div>
+            {/if}
         </header>
 
         <main>
