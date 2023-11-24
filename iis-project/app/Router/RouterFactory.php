@@ -21,6 +21,7 @@ final class RouterFactory
 		$router->addRoute('admin/dashboard', 'Admin:dashboard');
 		$router->addRoute('signout', 'Signout:default');
 		$router->addRoute('systeminfo/<id>', 'Systeminfo:default');
+		$router->addRoute('usersystems', 'UserSystems:default');
 		return $router;
 	}
 }
