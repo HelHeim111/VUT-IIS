@@ -6,7 +6,6 @@ namespace App;
 
 use Nette\Bootstrap\Configurator;
 use Tracy\Debugger;
-use Tracy\IBarPanel;
 
 
 class Bootstrap

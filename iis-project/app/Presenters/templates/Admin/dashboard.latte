@@ -16,15 +16,15 @@
     <table>
         <tr>
             <th>Uživatelské jméno</th>
-            <th>user_id</th> <!-- Add user_id column -->
-            <th>Role</th>   <!-- Add Role column -->
+            <th>user_id</th> 
+            <th>Role</th>   
             <th>Akce</th>
         </tr>
         {foreach $users as $userItem}
             <tr>
                 <td>{$userItem->username}</td>
-                <td>{$userItem->user_id}</td> <!-- Display user_id -->
-                <td>{$userItem->role}</td>   <!-- Display Role -->
+                <td>{$userItem->user_id}</td> 
+                <td>{$userItem->role}</td>   
                 <td>
                     <a href="{link editUserForm, $userItem->user_id}">Upravit</a>
                     <a href="{link delete, $userItem->user_id}" onclick="return confirm('Opravdu chcete smazat tohoto uživatele?');">Smazat</a>

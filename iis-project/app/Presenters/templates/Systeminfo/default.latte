@@ -1,45 +1,37 @@
+{layout '../@layout.latte'}
+
 {block content}
-
-    <main>
-        <div id="system-details">
-            <div class="user-info" style="float: right; margin-top: -15px;">
-                <span>Vítejte, {$user->getIdentity()->username}</span>
-                <a href="{link Signout:default}">Odhlásit se</a>
-            </div>
-            <h1>System Details</h1>
-            {if $system}
-                <div class="system-info">
-                    <h2>{$system->system_name}</h2>
-                    <p>Description: {$system->system_description}</p>
-                </div>
-
-                <div class="device-info">
-                    <h3>Devices</h3>
-                    <ul>
-                        {foreach $system->related('DeviceSystem') as $deviceSystem}
-                            <li>{$deviceSystem->device->device_name} - {$deviceSystem->device->description}</li>
-                        {/foreach}
-                    </ul>
-                </div>
-
-               <div class="user-info">
-                    <h3>Users</h3>
-                    <ul>
-                        {foreach $system->related('UserSystems') as $userSystem}
-                            <li>{$userSystem->user->username} - Role: {$userSystem->user->role}</li>
-                        {/foreach}
-                    </ul>
-                </div>
-
-
-                <div class="owner-info">
-                    <h3>Owner</h3>
-                    <p>{$system->admin->username}</p>
-                </div>
-            {else}
-                <p>No data available for this system.</p>
-            {/if}
+    {if isset($system)}
+        <div class="system-info">
+            <div contenteditable="true" id="system_name" data-id="{$system->id}">{$system->system_name}</div>
+            <div contenteditable="true" id="system_description" data-id="{$system->id}">{$system->system_description}</div>
         </div>
-    </main>
 
+        <button id="save_changes">Uložit změny</button>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('save_changes').addEventListener('click', () => {
+                    const systemId = document.getElementById('system_name').getAttribute('system_id');
+                    const systemName = document.getElementById('system_name').innerText;
+                    const systemDescription = document.getElementById('system_description').innerText;
+
+                    const url = '/systeminfo/' + systemId;
+
+                    naja.makeRequest('POST', url, {
+                        systemId: systemId,
+                        systemName: systemName,
+                        systemDescription: systemDescription,
+                    }).then(response => {
+                        alert(response.message);
+                    }).catch(error => {
+                        console.error('Chyba AJAX požadavku: ', error);
+                        // Handle AJAX request error
+                    });
+                });
+            });
+        </script>
+    {else}
+        <p>Systém nenalezen.</p>
+    {/if}
 {/block}

@@ -11,8 +11,6 @@ services:
     - App\Security\Authenticator
 
 
-
-
 application:
 	errorPresenter: Error
 	mapping:
