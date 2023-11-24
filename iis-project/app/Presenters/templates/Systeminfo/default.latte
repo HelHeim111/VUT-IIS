@@ -2,6 +2,10 @@
 
     <main>
         <div id="system-details">
+            <div class="user-info" style="float: right; margin-top: -15px;">
+                <span>Vítejte, {$user->getIdentity()->username}</span>
+                <a href="{link Signout:default}">Odhlásit se</a>
+            </div>
             <h1>System Details</h1>
             {if $system}
                 <div class="system-info">
