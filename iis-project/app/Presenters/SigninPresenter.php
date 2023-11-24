@@ -23,7 +23,7 @@ final class SigninPresenter extends Nette\Application\UI\Presenter
     protected function createComponentSigninForm(): Form
     {
         $form = $this->signinFactory->create(function (): void {
-            $this->user->isLoggedIn(); // Проверка, что пользователь вошел
+            $this->user->isLoggedIn();
             if ($this->user->isInRole('admin')) {
                 $this->redirect('Admin:dashboard');
             } else {

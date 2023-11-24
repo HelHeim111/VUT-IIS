@@ -137,23 +137,30 @@ class AdminPresenter extends Nette\Application\UI\Presenter
         return $form;
     }
 
-    // Handle edit user form submission
-    public function editUserFormSucceeded(Form $form, \stdClass $values): void
-    {
-        $userId = $this->getParameter('userId');
-        $user = $this->database->table('Users')->get($userId);
+// Handle edit user form submission
+public function editUserFormSucceeded(Form $form, \stdClass $values): void
+{
+    $userId = $this->getParameter('userId');
+    $user = $this->database->table('Users')->get($userId);
+    
+    // Update the username and role
+    $dataToUpdate = [
+        'username' => $values->username,
+        'role' => $values->role,
+    ];
 
-        $dataToUpdate = [
-            'username' => $values->username,
-            'role' => $values->role,
-        ];
+    // Check if a new password was provided
+    if (!empty($values->password)) {
+        // Hash and update the password
+        $dataToUpdate['password'] = $this->passwords->hash($values->password);
+    }
 
-        if (!empty($values->password)) {
-            $dataToUpdate['password'] = Passwords::hash($values->password);
-        }
+    // Update the user's data
+    $user->update($dataToUpdate);
 
-        $user->update($dataToUpdate);
-        $this->flashMessage('Uživatelské údaje byly aktualizovány.', 'success');
-        $this->redirect('Admin:dashboard');
-    } 
+    $this->flashMessage('Uživatelské údaje byly aktualizovány.', 'success');
+    // Redirect to Admin:dashboard after update
+    $this->redirect('Admin:dashboard');
+}
+    
 }
