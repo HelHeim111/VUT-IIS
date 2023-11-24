@@ -81,7 +81,8 @@ class AdminPresenter extends Nette\Application\UI\Presenter
 
         $form->addSelect('role', 'Role:', [
             'user' => 'Uživatel',
-            'admin' => 'Administrátor'
+            'admin' => 'Administrátor',
+            'broker' => 'Broker'
         ])->setRequired('Prosím vyberte roli.');
 
         $form->addSubmit('create', 'Vytvořit uživatele');
@@ -127,7 +128,8 @@ class AdminPresenter extends Nette\Application\UI\Presenter
 
         $form->addSelect('role', 'Role:', [
             'user' => 'Uživatel',
-            'admin' => 'Administrátor'
+            'admin' => 'Administrátor',
+            'broker' => 'Broker'
         ])->setDefaultValue($user->role)
             ->setRequired('Prosím vyberte roli.');
 
