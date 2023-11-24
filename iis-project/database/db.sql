@@ -68,6 +68,14 @@ CREATE TABLE `UserSystems` (
     CONSTRAINT `fk_system` FOREIGN KEY (`system_id`) REFERENCES `Systems`(`system_id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE `DeviceSystem` (
+    `device_id` INT NOT NULL,
+    `system_id` INT NOT NULL,
+    CONSTRAINT `pk_device_system` PRIMARY KEY (`device_id`, `system_id`),
+    CONSTRAINT `fk_device_system_device` FOREIGN KEY (`device_id`) REFERENCES `Devices`(`device_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk_device_system_system` FOREIGN KEY (`system_id`) REFERENCES `Systems`(`system_id`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 INSERT INTO `Users` (username, password, role) VALUES ('admin', '$2y$10$eStqgge8bpW6nMQ3kV6vOu1K1YuvZ83vAGACECiWBjaJBC2UKX4Ly', 'admin');
 INSERT INTO `Users` (username, password, role) VALUES ('Abobus', '$2y$10$BhhhsySPfuOxQMXQUd8ceeeJwm3DiM89TMtXVablnYxWn359I4CKG', 'user');
 INSERT INTO `Users` (username, password, role) VALUES ('Amogus', '$2y$10$qJHIxAuax0ML3oBriP4f3OL.oF8TKKUNjJB7ORKQRFSQU6DcqMhRq', 'user');
@@ -92,3 +100,6 @@ INSERT INTO `DeviceTypesParameters` (device_type_id, parameter_id) VALUES (2, 2)
 
 INSERT INTO `UserSystems` (user_id, system_id) VALUES (2, 1);
 INSERT INTO `UserSystems` (user_id, system_id) VALUES (3, 2);
+
+INSERT INTO `DeviceSystem` (`device_id`, `system_id`) VALUES (1, 1);
+INSERT INTO `DeviceSystem` (`device_id`, `system_id`) VALUES (2, 2);

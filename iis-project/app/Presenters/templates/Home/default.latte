@@ -96,7 +96,7 @@
                     {if $systems}
                         {foreach $systems as $system}
                             <div class="system-item">
-                                <strong>{$system->system_name}</strong> - Owned by: {$system->admin->username}
+                                <strong><a href="{link Systeminfo:default, $system->system_id}">{$system->system_name}</a></strong> - Owned by: {$system->admin->username}
                             </div>
                         {/foreach}
                     {else}
@@ -105,6 +105,7 @@
                 </div>
             </div>
         </main>
+
 
         <footer>
             <div class="footer-content">
