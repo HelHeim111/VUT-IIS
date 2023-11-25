@@ -1,33 +1,71 @@
 <?php
-
-declare(strict_types=1);
+// app/presenters/UserSystemsPresenter.php
 
 namespace App\Presenters;
 
 use Nette;
 use Nette\Database\Context;
+use Nette\Application\UI\Form;
 
 class UserSystemsPresenter extends Nette\Application\UI\Presenter
 {
     private $database;
 
-    public function __construct(Context $database)
+    public function __construct(Nette\Database\Context $database)
     {
         parent::__construct();
         $this->database = $database;
     }
+
     public function renderDefault()
     {
-         if (!$this->getUser()->isLoggedIn()) {
-            $this->redirect('signin:default');
-        }
-
         $userId = $this->getUser()->getId();
         $user = $this->database->table('Users')->get($userId);
-
         $this->template->user = $user;
-        $this->template->userSystems = $user->related('UserSystems');
 
+        if ($this->getUser()->isLoggedIn()) {
+            $userSystems = $this->database->table('UserSystems')
+                ->where('user_id', $userId)
+                ->fetchAll();
+
+            $this->template->userSystems = $userSystems;
+        } else {
+            $this->template->userSystems = [];
+        }
     }
+
+    protected function createComponentCreateSystemForm(): Form
+    {
+        $form = new Form();
+        $form->addText('system_name', 'System Name')->setRequired();
+        $form->addText('system_description', 'System Description')->setRequired();
+        $form->addSubmit('create', 'Create System');
+        $form->onSuccess[] = [$this, 'createSystemFormSucceeded'];
+        return $form;
+    }
+
+    public function createSystemFormSucceeded(Form $form, array $values): void
+    {
+        $userId = $this->getUser()->getId();
+        $system = $this->database->table('Systems')->insert([
+            'system_name' => $values['system_name'],
+            'system_description' => $values['system_description'],
+            'admin_id' => $userId,
+        ]);
+
+        $this->database->table('UserSystems')->insert([
+            'user_id' => $userId,
+            'system_id' => $system->system_id,
+        ]);
+
+        $this->flashMessage('System created successfully.', 'success');
+        $this->redirect('UserSystems:default');
+    }
+
+    public function handleCreateSystem(): void
+    {
+        $this->redirect('createComponentCreateSystemForm');
+    }
+
 
 }
