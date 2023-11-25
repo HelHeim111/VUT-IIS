@@ -1,19 +1,5 @@
 <div class="create-system-form">
     <h2>Create New System</h2>
 
-    <form action="{link UserSystems:createSystemFormSucceeded}" method="post">
-        <div>
-            <label for="system_name">System Name</label>
-            <input type="text" id="system_name" name="system_name" required>
-        </div>
-
-        <div>
-            <label for="system_description">System Description</label>
-            <input type="text" id="system_description" name="system_description" required>
-        </div>
-
-        <div>
-            <input type="submit" name="submit" value="Create System">
-        </div>
-    </form>
+    {control createSystemForm}
 </div>
