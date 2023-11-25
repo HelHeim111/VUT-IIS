@@ -4,10 +4,18 @@
         <span>Vítejte, {$presenter->user->getIdentity()->username}</span>
         <a href="{link Signout:default}">Odhlásit se</a>
     </div>
+
     <ul>
         {foreach $user->related('UserSystems') as $userSystem}
-            <li><a href="{link Systeminfo:default, $userSystem->system->system_id}">{$userSystem->system->system_name}</a></li>
+            <li>
+                <a href="{link Systeminfo:default, $userSystem->system->system_id}">
+                    {$userSystem->system->system_name}
+                </a>
+            </li>
         {/foreach}
     </ul>
+
+    <a href="{link createSystemForm}">Create New System</a>
+
     
 {/block}
