@@ -64,12 +64,13 @@
     <footer>
         &copy; {= date('Y') } Hellish Website. All souls reserved.
     </footer>
-</body>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://unpkg.com/naja@2/dist/Naja.min.js">
-    document.addEventListener('DOMContentLoaded', () => {
-        naja.initialize();
-    });
-</script>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/naja@2/dist/Naja.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', naja.initialize.bind(naja));
+    </script>
+    {block scripts}
+    {/block}
+</body>
 </html>

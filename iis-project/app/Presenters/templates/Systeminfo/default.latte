@@ -1,37 +1,58 @@
-{layout '../@layout.latte'}
-
+{extends '../@layout.latte'}
 {block content}
-    {if isset($system)}
-        <div class="system-info">
-            <div contenteditable="true" id="system_name" data-id="{$system->id}">{$system->system_name}</div>
-            <div contenteditable="true" id="system_description" data-id="{$system->id}">{$system->system_description}</div>
-        </div>
+    <!-- Flash Messages -->
+    {snippet flashMessages}
+        {foreach $flashes as $flash}
+            <div class="alert alert-{$flash->type}">{$flash->message}</div>
+        {/foreach}
+    {/snippet}
 
-        <button id="save_changes">Uložit změny</button>
+    <!-- System Information (Dynamically Updated) -->
+    {snippet renderDefault}
+    {/snippet}
 
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                document.getElementById('save_changes').addEventListener('click', () => {
-                    const systemId = document.getElementById('system_name').getAttribute('data-id');
-                    const systemName = document.getElementById('system_name').innerText;
-                    const systemDescription = document.getElementById('system_description').innerText;
+    <!-- System Edit Form -->
+    {snippet systemEditForm}
+        {include 'systemInfoSnippet'}
+        {control systemEditForm}
+    {/snippet}
+{/block}
 
-                    const url = '/systeminfo/?systemId=' + systemId;
 
-                    naja.makeRequest('POST', url, {
-                        systemId: systemId,
-                        systemName: systemName,
-                        systemDescription: systemDescription,
-                    }).then(response => {
-                        alert(response.message);
-                    }).catch(error => {
-                        console.error('Chyba AJAX požadavku: ', error);
-                        // Handle AJAX request error
-                    });
-                });
-            });
-        </script>
+{define systemInfoSnippet}
+    {if $system}
+        <h2>{$system->system_name}</h2>
+        <p>{$system->system_description}</p>
     {else}
-        <p>Systém nenalezen.</p>
+        <p>System information is not available.</p>
     {/if}
+{/define}
+
+
+
+{block scripts}
+    <script>
+        console.log('default.latte script is running');
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded and parsed');
+
+            naja.addEventListener('before', (event) => {
+                console.log('Before AJAX request is sent', event);
+            });
+
+            naja.addEventListener('success', (event) => {
+                console.log('AJAX request successful', event);
+            });
+
+            naja.addEventListener('error', (event) => {
+                console.log('AJAX request failed', event);
+            });
+
+            naja.snippetHandler.addEventListener('afterUpdate', function (event) {
+                if (event.snippet.id === 'flashMessages') {
+                    // Additional JS if needed when flash messages are updated
+                }
+            });
+        });
+    </script>
 {/block}

@@ -37,56 +37,45 @@ class SysteminfoPresenter extends Nette\Application\UI\Presenter
         }
     }
 
-    public function handleUpdateSystem(): void
-    {
-        $systemId = $this->getParameter('systemId');
-        $systemName = $this->getParameter('systemName');
-        $systemDescription = $this->getParameter('systemDescription');
-
-        $system = $this->database->table('Systems')->get($systemId);
-        if ($system) {
-            $system->update([
-                'system_name' => $systemName,
-                'system_description' => $systemDescription,
-            ]);
-            $this->payload->success = true;
-        } else {
-            $this->payload->success = false;
-            $this->payload->message = 'Systém nenalezen.';
-        }
-
-        $this->sendPayload();
-    }
-
     protected function createComponentSystemEditForm(): Form
     {
         $form = new Form;
+        $form->setHtmlAttribute('class', 'ajax');
         $form->addText('system_name', 'Název systému');
         $form->addTextArea('system_description', 'Popis');
         $form->addSubmit('submit', 'Uložit změny');
         $form->onSuccess[] = [$this, 'systemEditFormSucceeded'];
+    
         return $form;
-    }    
+    }     
 
     public function systemEditFormSucceeded(Form $form, \stdClass $values): void
     {
         $systemId = $this->getParameter('systemId');
         $system = $this->database->table('Systems')->get($systemId);
-        if ($system) {
-            $system->update([
-                'system_name' => $values->system_name,
-                'system_description' => $values->system_description,
-            ]);
-
-            $this->flashMessage('Systém byl úspěšně aktualizován.', 'success');
+        if (!$system) {
+            $this->flashMessage('Systém nenalezen.', 'error');
             if ($this->isAjax()) {
-                $this->redrawControl('systemSnippet');
+                $this->payload->error = true;
+                $this->redrawControl('flashMessages');
             } else {
                 $this->redirect('this');
             }
-        } else {
-            $this->error('Systém nenalezen');
+            return;
         }
-    }
+    
+        $system->update([
+            'system_name' => $values->system_name,
+            'system_description' => $values->system_description,
+        ]);
+    
+        $this->flashMessage('Systém byl úspěšně aktualizován.', 'success');
+        if ($this->isAjax()) {
+            $this->payload->success = true;
+            $this->redrawControl();
+        } else {
+            $this->redirect('this');
+        }
+    }    
 
 }
