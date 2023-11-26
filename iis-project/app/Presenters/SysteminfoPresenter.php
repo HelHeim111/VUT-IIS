@@ -25,6 +25,7 @@ class SysteminfoPresenter extends BasePresenter
     public function renderDefault(int $systemId): void
     {
         $system = $this->database->table('Systems')->get($systemId);
+        $this->template->systemId = $systemId;
         if (!$system) {
             $this->flashMessage('System nenalezen.', 'error');
             $this->redirect('Home:default');
@@ -159,6 +160,17 @@ class SysteminfoPresenter extends BasePresenter
             return;
         }
 
+    }
+
+    public function actionDelete(int $systemId, int $userId): void
+    {
+        $this->database->table('UserSystems')
+            ->where('user_id', $userId)
+            ->where('system_id', $systemId)
+            ->delete();
+
+        $this->flashMessage('Uživatel byl odstraněn ze systému.', 'success');
+        $this->redirect('Systeminfo:default', $systemId);
     }
 
 }

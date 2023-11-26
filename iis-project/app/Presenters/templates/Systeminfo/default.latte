@@ -57,7 +57,9 @@
         {if $users}
             <h3>Uživatelé:</h3>
             {foreach $users as $us}
-                <p>{$us->username}</p>
+                <p>{$us->username}
+                    <a href="{link delete, $systemId, $us->user_id}" onclick="return confirm('Opravdu chcete smazat uživatele?');">Smazat</a>
+                </p>
             {/foreach}
         {else}
             <p>Tento systém v současné době nemá žádné uživatele</p>
