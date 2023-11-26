@@ -53,6 +53,7 @@ class SysteminfoPresenter extends Nette\Application\UI\Presenter
     {
         $systemId = $this->getParameter('systemId');
         $system = $this->database->table('Systems')->get($systemId);
+        
         if (!$system) {
             $this->flashMessage('Systém nenalezen.', 'error');
             if ($this->isAjax()) {
