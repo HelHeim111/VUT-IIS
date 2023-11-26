@@ -99,14 +99,25 @@ class SysteminfoPresenter extends BasePresenter
     {
         $form = new Form;
         $form->setHtmlAttribute('class', 'ajax');
-        $userNames = $this->database->table('Users')->fetchPairs('user_id', 'username');
+        $systemId = $this->getParameter('systemId');
+        
+        $existingUserIds = $this->database->table('UserSystems')
+            ->where('system_id', $this->getParameter('systemId'))
+            ->fetchPairs('user_id', 'user_id');
+        $existingUserIds[] = $this->database->table('Systems')
+            ->get($this->getParameter('systemId'))->admin_id;
+
+        // Fetch usernames excluding the ones in the existingUserIds array
+        $userNames = $this->database->table('Users')
+            ->where('user_id NOT IN ?', $existingUserIds)
+            ->fetchPairs('user_id', 'username');
 
         $form->addSelect('username', 'Uživatel:')
             ->setRequired('Prosím vyberte uživatele.')
             ->setItems($userNames)
             ->setPrompt('Vyberte uživatele');
 
-        $systemId = $this->getParameter('systemId');
+        
         $form->addHidden('systemId', $systemId);
 
         $form->addSubmit('create', 'Přidat uživatele');
