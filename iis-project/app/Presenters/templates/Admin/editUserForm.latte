@@ -5,6 +5,8 @@
 {block content}
     <h1>Upravit uživatele</h1>
     
+    {control editUserForm}
+    
     {if $form->hasErrors()}
         <ul class="errors">
             {foreach $form->errors as $error}
@@ -13,7 +15,6 @@
         </ul>
     {/if}
 
-    {control editUserForm}
 
     <a href="{link Admin:dashboard}">Zpět na Dashboard</a>
 {/block}

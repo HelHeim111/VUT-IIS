@@ -6,14 +6,18 @@ namespace App\Presenters;
 
 use Nette;
 use Nette\Application\UI\Form;
+use Nette\Security\User;
+use Nette\Database\Context;
 
-class SysteminfoPresenter extends Nette\Application\UI\Presenter
+class SysteminfoPresenter extends BasePresenter
 {
     private $database;
+    private $user;
 
-    public function __construct(Nette\Database\Context $database)
+    public function __construct(User $user, Context $database)
     {
-        parent::__construct();
+        parent::__construct($user, $database);
+        $this->user = $user;
         $this->database = $database;
     }
 

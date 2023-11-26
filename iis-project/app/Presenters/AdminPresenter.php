@@ -6,15 +6,19 @@ use Nette;
 use Nette\Database\Context;
 use Nette\Application\UI\Form;
 use Nette\Security\Passwords;
+use Nette\Security\User;
 
-class AdminPresenter extends Nette\Application\UI\Presenter
+class AdminPresenter extends BasePresenter
 {
     private $database;
     private $passwords;
+    private $user;
 
-    public function __construct(Context $database, Passwords $passwords)
+    public function __construct(User $user, Context $database, Passwords $passwords)
     {
+        parent::__construct($user, $database);
         $this->database = $database;
+        $this->user = $user;
         $this->passwords = $passwords;
     }
 
@@ -35,7 +39,15 @@ class AdminPresenter extends Nette\Application\UI\Presenter
     // Renders the dashboard template
     public function renderDashboard()
     {
-        $this->template->users = $this->database->table('Users')->fetchAll();
+        $users = $this->database->table('Users');
+
+        if (!$users) {
+            $this->flashMessage('Uzivatele nenalezene.', 'error');
+            $this->redirect('Home:default');
+        }
+
+        $this->template->users = $users;
+        $this->template->user = $this->user;
     }
 
     public function renderEditUserForm()
@@ -73,17 +85,20 @@ class AdminPresenter extends Nette\Application\UI\Presenter
     protected function createComponentCreateUserForm(): Form
     {
         $form = new Form;
+        $form->setHtmlAttribute('class', 'ajax');
         $form->addText('username', 'Uživatelské jméno:')
-                ->setRequired('Prosím zadejte uživatelské jméno.');
+                ->setRequired('Prosím zadejte uživatelské jméno.')
+                ->setHtmlAttribute('placeholder', 'Prosím zadejte jméno');
 
         $form->addPassword('password', 'Heslo:')
-                ->setRequired('Prosím zadejte heslo.');
+                ->setRequired('Prosím zadejte heslo.')
+                ->setHtmlAttribute('placeholder', 'Prosím zadejte heslo');
 
         $form->addSelect('role', 'Role:', [
             'user' => 'Uživatel',
             'admin' => 'Administrátor',
             'broker' => 'Broker'
-        ])->setRequired('Prosím vyberte roli.');
+        ]);
 
         $form->addSubmit('create', 'Vytvořit uživatele');
         $form->onSuccess[] = [$this, 'createUserFormSucceeded'];
@@ -97,7 +112,13 @@ class AdminPresenter extends Nette\Application\UI\Presenter
         // Check if the username already exists
         $existingUser = $this->database->table('Users')->where('username', $values->username)->fetch();
         if ($existingUser) {
-            $form->addError('Uživatelské jméno již existuje.');
+            $this->flashMessage('Uživatelské jméno již existuje.', 'error');
+            if ($this->isAjax()) {
+                $this->payload->error = true;
+                $this->redrawControl('flashMessages');
+            } else {
+                $this->redirect('this');
+            }
             return;
         }
         
@@ -108,7 +129,12 @@ class AdminPresenter extends Nette\Application\UI\Presenter
         ]);
 
         $this->flashMessage('Uživatel byl úspěšně vytvořen.', 'success');
-        $this->redirect('Admin:dashboard');
+        if ($this->isAjax()) {
+            $this->payload->success = true;
+            $this->redrawControl();
+        } else {
+            $this->redirect('this');
+        }
     }
 
     // Edit user form component

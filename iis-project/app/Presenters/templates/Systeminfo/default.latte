@@ -14,7 +14,9 @@
     <!-- System Edit Form -->
     {snippet systemEditForm}
         {include 'systemInfoSnippet'}
-        {control systemEditForm}
+        {if ($user->isLoggedIn() && $system->admin_id == $user->getId()) || ($user->isLoggedIn() && $user->isInRole('admin'))}
+            {control systemEditForm}
+        {/if}
     {/snippet}
 {/block}
 
@@ -23,6 +25,8 @@
     {if $system}
         <h2>{$system->system_name}</h2>
         <p>{$system->system_description}</p>
+        {* {if }
+        {/if} *}
     {else}
         <p>System information is not available.</p>
     {/if}

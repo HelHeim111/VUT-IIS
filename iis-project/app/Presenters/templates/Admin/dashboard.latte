@@ -4,27 +4,75 @@
 
 {block content}
     <h1>Admin Dashboard</h1>
-    <p>Vítejte na administračním dashboardu!</p>
 
-    {control createUserForm}
-
-    <table>
-        <tr>
-            <th>Uživatelské jméno</th>
-            <th>user_id</th> 
-            <th>Role</th>   
-            <th>Akce</th>
-        </tr>
-        {foreach $users as $userItem}
-            <tr>
-                <td>{$userItem->username}</td>
-                <td>{$userItem->user_id}</td> 
-                <td>{$userItem->role}</td>   
-                <td>
-                    <a href="{link editUserForm, $userItem->user_id}">Upravit</a>
-                    <a href="{link delete, $userItem->user_id}" onclick="return confirm('Opravdu chcete smazat tohoto uživatele?');">Smazat</a>
-                </td>
-            </tr>
+    <!-- Flash Messages -->
+    {snippet flashMessages}
+        {foreach $flashes as $flash}
+            <div class="alert alert-{$flash->type}">{$flash->message}</div>
         {/foreach}
+    {/snippet}
+
+
+
+
+    {snippet createUserForm}
+        {control createUserForm}
+        {include 'userInfoSnippet'}
+    {/snippet}
+    {define userInfoSnippet}
+    
+        <table>
+            <tr>
+                <th>Uživatelské jméno</th>
+                <th>user_id</th> 
+                <th>Role</th>   
+            </tr>
+        
+            {if $users}
+                {foreach $users as $userItem}
+                    <tr>
+                        <td>{$userItem->username}</td>
+                        <td>{$userItem->user_id}</td> 
+                        <td>{$userItem->role}</td>
+                        {if $userItem->user_id != $user->getId()}   
+                            <td>
+                                <a href="{link editUserForm, $userItem->user_id}">Upravit</a>
+                                <a href="{link delete, $userItem->user_id}" onclick="return confirm('Opravdu chcete smazat tohoto uživatele?');">Smazat</a>
+                            </td>
+                        {/if}
+                    </tr>
+                {/foreach}
+            {else}
+                <p>Uzivatele nenalezene</p>
+            {/if}
+        {/define}
+
     </table>
+{/block}
+
+{block scripts}
+    <script>
+        console.log('default.latte script is running');
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded and parsed');
+
+            naja.addEventListener('before', (event) => {
+                console.log('Before AJAX request is sent', event);
+            });
+
+            naja.addEventListener('success', (event) => {
+                console.log('AJAX request successful', event);
+            });
+
+            naja.addEventListener('error', (event) => {
+                console.log('AJAX request failed', event);
+            });
+
+            naja.snippetHandler.addEventListener('afterUpdate', function (event) {
+                if (event.snippet.id === 'flashMessages') {
+                    // Additional JS if needed when flash messages are updated
+                }
+            });
+        });
+    </script>
 {/block}
