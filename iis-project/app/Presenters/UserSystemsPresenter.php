@@ -4,6 +4,7 @@
 namespace App\Presenters;
 
 use Nette;
+use Nette\Application\Responses\VoidResponse;
 use Nette\Database\Context;
 use Nette\Application\UI\Form;
 
@@ -67,5 +68,16 @@ class UserSystemsPresenter extends Nette\Application\UI\Presenter
         $this->redirect('createComponentCreateSystemForm');
     }
 
+    public function actionDelete($systemId): void
+    {
+        $system = $this->database->table('Systems')->get($systemId);
+        if ($system) {
+            $system->delete();
+            $this->flashMessage('System byl úspěšně smazán.', 'success');
+        } else {
+            $this->flashMessage('System nenalezen.', 'error');
+        }
+        $this->redirect('UserSystems:default');
+    }
 
 }

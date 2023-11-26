@@ -8,9 +8,8 @@
     <ul>
         {foreach $user->related('UserSystems') as $userSystem}
             <li>
-                <a href="{link Systeminfo:default, $userSystem->system->system_id}">
-                    {$userSystem->system->system_name}
-                </a>
+                <a href="{link Systeminfo:default, $userSystem->system->system_id}"> {$userSystem->system->system_name}</a>
+                <a href="{link delete, $userSystem->system_id}" onclick="return confirm('Opravdu chcete smazat system?');">Smazat</a>
             </li>
         {/foreach}
     </ul>
