@@ -23,4 +23,16 @@ class HomePresenter extends Nette\Application\UI\Presenter
         // Pass the $systems variable to the template
         $this->template->systems = $systems;
     }
+
+    public function actionDelete($systemId): void
+    {
+        $system = $this->database->table('Systems')->get($systemId);
+        if ($system) {
+            $system->delete();
+            $this->flashMessage('System byl úspěšně smazán.', 'success');
+        } else {
+            $this->flashMessage('System nenalezen.', 'error');
+        }
+        $this->redirect('Home:default');
+    }
 }
