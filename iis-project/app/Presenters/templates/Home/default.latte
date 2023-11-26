@@ -11,6 +11,9 @@
                         {foreach $systems as $system}
                             <div class="system-item">
                                 <strong><a href="{link Systeminfo:default, $system->system_id}">{$system->system_name}</a></strong> - Owned by: {$system->admin->username}
+                                {if $user->isInRole('admin')}
+                                    <a href="{link delete, $system->system_id}" onclick="return confirm('Opravdu chcete smazat system?');">Smazat</a>
+                                {/if}
                             </div>
                         {/foreach}
                     {else}
