@@ -37,7 +37,10 @@
 
 
     {snippet createUserForm}
-        {control createUserForm}
+        <button id="showCreateUserForm">Vytvořit uživatele</button>
+        <div id="createUserForm" style="display: none;">
+            {control createUserForm}
+        </div>
         {include 'userInfoSnippet'}
     {/snippet}
     {define userInfoSnippet}
@@ -73,6 +76,22 @@
 
 {block scripts}
     <script>
+
+        function bindShowFormButton() {
+            var button = document.getElementById('showCreateUserForm');
+            if (button) {
+                button.removeEventListener('click', toggleForm); // Remove existing listener to prevent duplicates
+                button.addEventListener('click', toggleForm);
+            }
+        }
+
+        function toggleForm() {
+            var form = document.getElementById('createUserForm');
+            if (form) {
+                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
         console.log('default.latte script is running');
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM fully loaded and parsed');
@@ -87,6 +106,13 @@
 
             naja.addEventListener('error', (event) => {
                 console.log('AJAX request failed', event);
+            });
+
+            bindShowFormButton(); // Bind the event listener on page load
+
+            // Re-bind the event listener after Naja updates the page
+            naja.snippetHandler.addEventListener('afterUpdate', function () {
+                bindShowFormButton();
             });
 
             naja.snippetHandler.addEventListener('afterUpdate', function (event) {
