@@ -13,11 +13,13 @@ class SysteminfoPresenter extends BasePresenter
 {
     private $database;
     private $user;
+    private $system;
     public function __construct(User $user, Context $database)
     {
         parent::__construct($user, $database);
         $this->user = $user;
         $this->database = $database;
+        $this->system = ;
     }
 
     public function renderDefault(int $systemId): void
@@ -96,11 +98,16 @@ class SysteminfoPresenter extends BasePresenter
     protected function createComponentAddUserForm(): Form
     {
         $form = new Form;
-        $form->addText('user_id', 'Uživatelské ID:')
-                ->setRequired('Prosím zadejte uživatelské ID.')
-                ->setHtmlAttribute('placeholder', 'Prosím zadejte ID');
+        $form->setHtmlAttribute('class', 'ajax');
+        $userNames = $this->database->table('Users')->fetchPairs('user_id', 'username');
+
+        $form->addSelect('username', 'Uživatel:')
+            ->setRequired('Prosím vyberte uživatele.')
+            ->setItems($userNames)
+            ->setPrompt('Vyberte uživatele');
 
         $form->addSubmit('create', 'Přidat uživatele');
+
         $form->onSuccess[] = [$this, 'addUserFormSucceeded'];
 
         return $form;
@@ -108,22 +115,25 @@ class SysteminfoPresenter extends BasePresenter
 
     public function addUserFormSucceeded(Form $form, array $values): void
     {
-        $systemId = $this->getParameter('systemId');
-        $system = $this->database->table('Systems')->get($systemId);
-        $user = $this->database->table('Users')->where('user_id', $values['user_id'])->fetch();
+        $system = null;
+        $user = $this->database->table('Users')->where('username', $values['username'])->fetch();
 
-        if(property_exists($user, 'user_id') && property_exists($system, 'system_id')) {
+        if(property_exists($user, 'username') && property_exists($system, 'system_id')) {
             $this->database->table('UserSystems')->insert([
                 'user_id' => $user->user_id,
-                'system_id' => $system->system_id,
+                'system_id' => $system,
             ]);
         }
         else {
             $this->flashMessage('Toto uživatelské ID neexistuje.', 'error');
+            if ($this->isAjax()) {
+                $this->payload->error = true;
+                $this->redrawControl('flashMessages');
+            } else {
+                $this->redirect('this');
+            }
+            return;
         }
-        
-
-        $this->redirect('Systeminfo:default', $system->system_id);
 
     }
 

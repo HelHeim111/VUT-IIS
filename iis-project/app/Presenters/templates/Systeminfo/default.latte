@@ -43,6 +43,12 @@
 {/block}
 
 
+{snippet addUserForm}
+    
+    {include 'systemInfoSnippet'}
+     
+{/snippet}
+
 {define systemInfoSnippet}
     {if $system}
         <h2>{$system->system_name}</h2>
@@ -58,7 +64,10 @@
         {else}
             <p>Tento systém v současné době nemá žádné uživatele</p>
         {/if}
-        <a href="{link addUserForm}">Přidat uživatele</a>
+        <button id="showAddUserForm">Přidat uživatele</button>
+        <div id="addUserForm" style="display: none;">
+            {control addUserForm}
+        </div>
 
         {if $devices}
             <h3>Zařízení:</h3>
@@ -78,6 +87,22 @@
 
 {block scripts}
     <script>
+
+        function bindShowFormButton() {
+            var button = document.getElementById('showAddUserForm');
+            if (button) {
+                button.removeEventListener('click', toggleForm); // Remove existing listener to prevent duplicates
+                button.addEventListener('click', toggleForm);
+            }
+        }
+
+        function toggleForm() {
+            var form = document.getElementById('addUserForm');
+            if (form) {
+                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
         console.log('default.latte script is running');
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM fully loaded and parsed');
@@ -92,6 +117,13 @@
 
             naja.addEventListener('error', (event) => {
                 console.log('AJAX request failed', event);
+            });
+
+            bindShowFormButton(); // Bind the event listener on page load
+
+            // Re-bind the event listener after Naja updates the page
+            naja.snippetHandler.addEventListener('afterUpdate', function () {
+                bindShowFormButton();
             });
 
             naja.snippetHandler.addEventListener('afterUpdate', function (event) {
