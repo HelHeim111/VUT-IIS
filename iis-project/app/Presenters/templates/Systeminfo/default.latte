@@ -1,5 +1,27 @@
 {extends '../@layout.latte'}
 {block content}
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        {if $user->isInRole('admin')}
+                <a href="{link Admin:dashboard}">Admin Dashboard</a>
+        {/if}
+        {if !$user->isLoggedIn()}
+            <div class="user-info" style="float: right;">
+                <a href="{link Signin:default}">Login</a>
+                <a href="{link Signup:default}">Register</a>
+            </div>
+        {else}
+            <a href="{link UserSystems:default}">My systems</a>
+        <div class="user-info" style="float: right;">
+            <span>Vítejte, {$user->getIdentity()->username}</span>
+            <a href="{link Signout:default}">Odhlásit se</a>
+        </div>
+        {/if}
+    </nav>
+
     <!-- Flash Messages -->
     {snippet flashMessages}
         {foreach $flashes as $flash}

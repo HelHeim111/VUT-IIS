@@ -1,21 +1,29 @@
 {block content}
-<div class="create-system-form">
-    <h2>Create New System</h2>
 
-    <form action="{link UserSystems:createSystemFormSucceeded}" method="post">
-        <div>
-            <label for="system_name">System Name</label>
-            <input type="text" id="system_name" name="system_name" required>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        {if $user->isInRole('admin')}
+                <a href="{link Admin:dashboard}">Admin Dashboard</a>
+        {/if}
+        {if !$user->isLoggedIn()}
+            <div class="user-info" style="float: right;">
+                <a href="{link Signin:default}">Login</a>
+                <a href="{link Signup:default}">Register</a>
+            </div>
+        {else}
+            <a href="{link UserSystems:default}">My systems</a>
+        <div class="user-info" style="float: right;">
+            <span>Vítejte, {$user->getIdentity()->username}</span>
+            <a href="{link Signout:default}">Odhlásit se</a>
         </div>
+        {/if}
+    </nav>
 
-        <div>
-            <label for="system_description">System Description</label>
-            <input type="text" id="system_description" name="system_description" required>
-        </div>
+    <div class="create-system-form">
+        <h1>Registrace nového systemu</h1>
 
-        <div>
-            <input type="submit" name="submit" value="Create System">
-        </div>
-    </form>
-</div>
+        {control createSystemForm}
+    </div>
 {/block}

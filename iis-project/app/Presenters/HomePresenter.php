@@ -26,6 +26,7 @@ class HomePresenter extends BasePresenter
 
         // Pass the $systems variable to the template
         $this->template->systems = $systems;
+        $this->template->user= $this->user;
     }
 
     public function actionDelete($systemId): void

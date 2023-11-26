@@ -6,14 +6,18 @@ use Nette;
 use Nette\Application\UI\Form;
 use Nette\Security\Passwords;
 use Nette\Database\Context;
+use Nette\Security\User;
 
-class SignupPresenter extends Nette\Application\UI\Presenter
+class SignupPresenter extends BasePresenter
 {
     private $passwords;
     private $database;
+    private $user;
 
-    public function __construct(Passwords $passwords, Context $database)
-    {
+    public function __construct(User $user, Passwords $passwords, Context $database)
+    {   
+        parent::__construct($user, $database);
+        $this->user = $user;
         $this->passwords = $passwords;
         $this->database = $database;
     }
