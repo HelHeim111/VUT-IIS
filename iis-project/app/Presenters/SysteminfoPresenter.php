@@ -14,12 +14,12 @@ class SysteminfoPresenter extends BasePresenter
     private $database;
     private $user;
     private $system;
+
     public function __construct(User $user, Context $database)
     {
         parent::__construct($user, $database);
         $this->user = $user;
         $this->database = $database;
-        $this->system = ;
     }
 
     public function renderDefault(int $systemId): void
@@ -106,6 +106,9 @@ class SysteminfoPresenter extends BasePresenter
             ->setItems($userNames)
             ->setPrompt('Vyberte uživatele');
 
+        $systemId = $this->getParameter('systemId');
+        $form->addHidden('systemId', $systemId);
+
         $form->addSubmit('create', 'Přidat uživatele');
 
         $form->onSuccess[] = [$this, 'addUserFormSucceeded'];
@@ -115,14 +118,24 @@ class SysteminfoPresenter extends BasePresenter
 
     public function addUserFormSucceeded(Form $form, array $values): void
     {
-        $system = null;
-        $user = $this->database->table('Users')->where('username', $values['username'])->fetch();
+        $userId = $values['username'];
+        $user = $this->database->table('Users')->get($userId);
+        $systemId = $values['systemId'];
+        $system = $this->database->table('Systems')->get($systemId);
 
-        if(property_exists($user, 'username') && property_exists($system, 'system_id')) {
+        if ($user && $systemId) {
             $this->database->table('UserSystems')->insert([
                 'user_id' => $user->user_id,
                 'system_id' => $system,
             ]);
+
+            $this->flashMessage('Uživatel byl úspěšně pridan.', 'success');
+            if ($this->isAjax()) {
+                $this->payload->success = true;
+                $this->redrawControl();
+            } else {
+                $this->redirect('this');
+            }
         }
         else {
             $this->flashMessage('Toto uživatelské ID neexistuje.', 'error');
