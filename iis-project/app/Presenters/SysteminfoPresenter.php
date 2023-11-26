@@ -13,7 +13,6 @@ class SysteminfoPresenter extends BasePresenter
 {
     private $database;
     private $user;
-
     public function __construct(User $user, Context $database)
     {
         parent::__construct($user, $database);
@@ -29,15 +28,26 @@ class SysteminfoPresenter extends BasePresenter
             $this->redirect('Home:default');
         }
         $this->template->system = $system;
-    
         $userSystems = $this->database->table('UserSystems')
             ->where('system_id', $systemId)
             ->fetchAll();
-    
+
+        $this->template->systemOwner = $this->database->table('Users')->get($system->admin_id);
+        
         $this->template->users = [];
         foreach ($userSystems as $userSystem) {
             $this->template->users[] = $this->database->table('Users')
                 ->get($userSystem->user_id);
+        }
+
+        $deviceSystems = $this->database->table('DeviceSystem')
+        ->where('system_id', $systemId)
+        ->fetchAll();
+
+        $this->template->devices = [];
+        foreach ($deviceSystems as $deviceSystem) {
+            $this->template->devices[] = $this->database->table('Devices')
+                ->get($deviceSystem->device_id);
         }
     }
 
@@ -82,5 +92,39 @@ class SysteminfoPresenter extends BasePresenter
             $this->redirect('this');
         }
     }    
+
+    protected function createComponentAddUserForm(): Form
+    {
+        $form = new Form;
+        $form->addText('user_id', 'Uživatelské ID:')
+                ->setRequired('Prosím zadejte uživatelské ID.')
+                ->setHtmlAttribute('placeholder', 'Prosím zadejte ID');
+
+        $form->addSubmit('create', 'Přidat uživatele');
+        $form->onSuccess[] = [$this, 'addUserFormSucceeded'];
+
+        return $form;
+    }
+
+    public function addUserFormSucceeded(Form $form, array $values): void
+    {
+        $systemId = $this->getParameter('systemId');
+        $system = $this->database->table('Systems')->get($systemId);
+        $user = $this->database->table('Users')->where('user_id', $values['user_id'])->fetch();
+
+        if(property_exists($user, 'user_id') && property_exists($system, 'system_id')) {
+            $this->database->table('UserSystems')->insert([
+                'user_id' => $user->user_id,
+                'system_id' => $system->system_id,
+            ]);
+        }
+        else {
+            $this->flashMessage('Toto uživatelské ID neexistuje.', 'error');
+        }
+        
+
+        $this->redirect('Systeminfo:default', $system->system_id);
+
+    }
 
 }

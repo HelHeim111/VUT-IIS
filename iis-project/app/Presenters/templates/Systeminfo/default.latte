@@ -46,9 +46,29 @@
 {define systemInfoSnippet}
     {if $system}
         <h2>{$system->system_name}</h2>
+        <h2>Vlastník systému: {$systemOwner->username}</h2>
         <p>{$system->system_description}</p>
-        {* {if }
-        {/if} *}
+        
+        
+        {if $users}
+            <h3>Uživatelé:</h3>
+            {foreach $users as $us}
+                <p>{$us->username}</p>
+            {/foreach}
+        {else}
+            <p>Tento systém v současné době nemá žádné uživatele</p>
+        {/if}
+        <a href="{link addUserForm}">Přidat uživatele</a>
+
+        {if $devices}
+            <h3>Zařízení:</h3>
+            {foreach $devices as $device}
+                <p>{$device->device_name}</p>
+            {/foreach}
+        {else}
+            <p>Tento systém v současné době nemá žádné zařízení</p>
+        {/if}
+
     {else}
         <p>System information is not available.</p>
     {/if}
