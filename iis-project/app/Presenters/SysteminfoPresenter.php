@@ -55,7 +55,6 @@ class SysteminfoPresenter extends BasePresenter
         ->where('system_id', $systemId)
         ->fetchAll();
 
-        $this->template->parameters = $this->database->table('Parameters')->fetchAll();
 
         $this->template->devices = [];
         foreach ($deviceSystems as $deviceSystem) {
@@ -226,6 +225,8 @@ class SysteminfoPresenter extends BasePresenter
                 'parameters' => $paramDetails
             ];
         }
+
+        $this->template->parameters = $this->database->table('Parameters')->fetchAll();
     
         $this->template->devices = $deviceDetails;
     }
