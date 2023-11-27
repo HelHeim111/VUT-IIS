@@ -71,7 +71,7 @@ class SysteminfoPresenter extends BasePresenter
     
             $paramDetails = [];
             foreach ($parameters as $param) {
-                $parameter = $this->database->table('Parameters')
+                $parameter = $this->database->table('Parameter')
                     ->get($param->parameter_id);
                 $paramDetails[] = [
                     'parameter_name' => $parameter->parameter_name,
