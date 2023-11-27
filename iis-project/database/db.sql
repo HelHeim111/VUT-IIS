@@ -22,6 +22,11 @@ CREATE TABLE `DeviceTypes` (
     `description` VARCHAR(128)
 );
 
+CREATE TABLE `ParameterTypes` (
+    `parameter_type_id` INT PRIMARY KEY AUTO_INCREMENT,
+    `type_name` VARCHAR(32) NOT NULL,
+    `description` VARCHAR(128)
+);
 
 CREATE TABLE `Parameter` (
     `parameter_id` INT PRIMARY KEY AUTO_INCREMENT,
@@ -39,6 +44,14 @@ CREATE TABLE `Devices` (
     `user_id` INT,
     CONSTRAINT `fk_devices_device_type` FOREIGN KEY (`device_type_id`) REFERENCES `DeviceTypes`(`device_type_id`) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT `fk_devices_user` FOREIGN KEY (`user_id`) REFERENCES `Users`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE `DeviceTypeParameterType` (
+    `device_type_id` INT NOT NULL,
+    `parameter_type_id` INT NOT NULL,
+    CONSTRAINT `pk_device_type_parameter_type` PRIMARY KEY (`device_type_id`, `parameter_type_id`),
+    CONSTRAINT `fk_dtp_type_device_type` FOREIGN KEY (`device_type_id`) REFERENCES `DeviceTypes`(`device_type_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk_dtp_type_parameter_type` FOREIGN KEY (`parameter_type_id`) REFERENCES `ParameterTypes`(`parameter_type_id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE `Systems` (
