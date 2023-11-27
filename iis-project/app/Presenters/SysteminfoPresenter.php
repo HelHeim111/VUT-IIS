@@ -54,54 +54,6 @@ class SysteminfoPresenter extends BasePresenter
         }
     }
 
-    public function renderShowDevices(int $systemId): void
-    {
-        $this->template->systemId = $systemId;
-        $devices = $this->database->table('DeviceSystem')
-            ->where('system_id', $systemId)
-            ->fetchAll();
-    
-        $deviceDetails = [];
-        foreach ($devices as $deviceSystem) {
-            $device = $this->database->table('Devices')
-                ->get($deviceSystem->device_id);
-    
-            $parameters = $this->database->table('DeviceParameters')
-                ->where('device_id', $device->device_id)
-                ->fetchAll();
-    
-            $paramDetails = [];
-            foreach ($parameters as $param) {
-                $parameter = $this->database->table('Parameters')
-                    ->get($param->parameter_id);
-                $paramDetails[] = [
-                    'parameter_name' => $parameter->parameter_name,
-                    'parameter_value' => $parameter->parameter_value
-                ];
-            }
-    
-            $deviceDetails[] = [
-                'device_id' => $device->device_id,
-                'device_type' => $device->device_type,
-                'description' => $device->description,
-                'parameters' => $paramDetails
-            ];
-        }
-    
-        $this->template->devices = $deviceDetails;
-    }
-
-    public function actionDeleteDevice(int $systemId, int $deviceId): void
-    {
-        // Perform the deletion
-        $this->database->table('DeviceSystem')->where('device_id', $deviceId)->delete();
-        $this->database->table('DeviceParameters')->where('device_id', $deviceId)->delete();
-        $this->database->table('Devices')->where('device_id', $deviceId)->delete();
-    
-        $this->flashMessage('Zařízení bylo odstraněno.', 'success');
-        $this->redirect('Systeminfo:showDevices', $systemId);
-    }    
-
     public function renderCreateDeviceType(int $systemId): void
     {
         $this->template->systemId = $systemId;
@@ -226,6 +178,54 @@ class SysteminfoPresenter extends BasePresenter
         $this->flashMessage('Uživatel byl odstraněn ze systému.', 'success');
         $this->redirect('Systeminfo:default', $systemId);
     }
+
+    public function renderShowDevices(int $systemId): void
+    {
+        $this->template->systemId = $systemId;
+        $devices = $this->database->table('DeviceSystem')
+            ->where('system_id', $systemId)
+            ->fetchAll();
+    
+        $deviceDetails = [];
+        foreach ($devices as $deviceSystem) {
+            $device = $this->database->table('Devices')
+                ->get($deviceSystem->device_id);
+    
+            $parameters = $this->database->table('DeviceParameters')
+                ->where('device_id', $device->device_id)
+                ->fetchAll();
+    
+            $paramDetails = [];
+            foreach ($parameters as $param) {
+                $parameter = $this->database->table('Parameters')
+                    ->get($param->parameter_id);
+                $paramDetails[] = [
+                    'parameter_name' => $parameter->parameter_name,
+                    'parameter_value' => $parameter->parameter_value
+                ];
+            }
+    
+            $deviceDetails[] = [
+                'device_id' => $device->device_id,
+                'device_type' => $device->device_type,
+                'description' => $device->description,
+                'parameters' => $paramDetails
+            ];
+        }
+    
+        $this->template->devices = $deviceDetails;
+    }
+
+    public function actionDeleteDevice(int $systemId, int $deviceId): void
+    {
+        // Perform the deletion
+        $this->database->table('DeviceSystem')->where('device_id', $deviceId)->delete();
+        $this->database->table('DeviceParameters')->where('device_id', $deviceId)->delete();
+        $this->database->table('Devices')->where('device_id', $deviceId)->delete();
+    
+        $this->flashMessage('Zařízení bylo odstraněno.', 'success');
+        $this->redirect('Systeminfo:showDevices', $systemId);
+    }    
 
     protected function createComponentCreateDeviceType(): Form
     {
