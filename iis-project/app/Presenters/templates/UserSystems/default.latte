@@ -1,13 +1,26 @@
 {block content}
     <h1>User Systems</h1>
+    <nav>
+        <a href="/">Home</a>
+    </nav>
 
     <ul>
-        {foreach $userSystems as $userSystem}
+
+        <h2>Systémy, které jste vytvořili</h2>
+        {foreach $userCreatedSystems as $userCreatedSystem}
             <li>
-                <a href="{link Systeminfo:default, $userSystem->system_id}"> {$userSystem->system_name}</a>
-                <a href="{link delete, $userSystem->system_id}" onclick="return confirm('Opravdu chcete smazat system?');">Smazat</a>
+                <a href="{link Systeminfo:default, $userCreatedSystem->system_id}"> {$userCreatedSystem->system_name}</a>
+                <a href="{link delete, $userCreatedSystem->system_id}" onclick="return confirm('Opravdu chcete smazat system?');">Smazat</a>
             </li>
         {/foreach}
+
+        <h2>Systémy, ve kterých jste</h2>
+        {foreach $user->related('UserSystems') as $userSystem}
+            <li>
+                <a href="{link Systeminfo:default, $userSystem->system->system_id}"> {$userSystem->system->system_name}</a>
+            </li>
+        {/foreach}
+
     </ul>
 
     <a href="{link createSystemForm}">Create New System</a>

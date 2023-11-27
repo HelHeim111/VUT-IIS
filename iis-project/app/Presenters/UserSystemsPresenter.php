@@ -27,13 +27,18 @@ class UserSystemsPresenter extends BasePresenter
         $this->template->user = $user;
 
         if ($this->getUser()->isLoggedIn()) {
-            $userSystems = $this->database->table('Systems')
+            $userSystems = $this->database->table('UserSystems')
+                ->where('user_id', $userId)
+                ->fetchAll();
+            $userCreatedSystems = $this->database->table('Systems')
                 ->where('admin_id', $userId)
                 ->fetchAll();
 
             $this->template->userSystems = $userSystems;
+            $this->template->userCreatedSystems = $userCreatedSystems;
         } else {
             $this->template->userSystems = [];
+            $this->template->userCreatedSystems = [];
         }
     }
 
