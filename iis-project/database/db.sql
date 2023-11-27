@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS `UserSystems`;
 DROP TABLE IF EXISTS `DeviceParameters`;
 DROP TABLE IF EXISTS `Devices`;
 DROP TABLE IF EXISTS `Systems`;
-DROP TABLE IF EXISTS `Parameter`;
+DROP TABLE IF EXISTS `Parameters`;
 DROP TABLE IF EXISTS `DeviceTypeParameterType`;
 DROP TABLE IF EXISTS `ParameterTypes`;
 DROP TABLE IF EXISTS `DeviceTypes`;
@@ -28,10 +28,10 @@ CREATE TABLE `ParameterTypes` (
     `description` VARCHAR(128)
 );
 
-CREATE TABLE `Parameter` (
+CREATE TABLE `Parameters` (
     `parameter_id` INT PRIMARY KEY AUTO_INCREMENT,
     `parameter_name` VARCHAR(32) NOT NULL,
-    `parameter_value` FLOAT NOT NULL,
+    `parameter_value` FLOAT NOT NULL DEFAULT 0.0,
     `parameter_type_id` INT,
     CONSTRAINT `fk_parameters_parameter_type` FOREIGN KEY (`parameter_type_id`) REFERENCES `ParameterTypes`(`parameter_type_id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -67,7 +67,7 @@ CREATE TABLE `DeviceParameters` (
     `parameter_id` INT NOT NULL,
     CONSTRAINT `pk_dtp` PRIMARY KEY (`device_id`, `parameter_id`),
     CONSTRAINT `fk_dtp_device` FOREIGN KEY (`device_id`) REFERENCES `Devices`(`device_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `fk_dtp_parameter` FOREIGN KEY (`parameter_id`) REFERENCES `Parameter`(`parameter_id`) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT `fk_dtp_parameter` FOREIGN KEY (`parameter_id`) REFERENCES `Parameters`(`parameter_id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE `UserSystems` (
@@ -108,9 +108,9 @@ INSERT INTO `Devices` (device_type, device_type_id, description, user_id) VALUES
 INSERT INTO `DeviceTypeParameterType` (device_type_id, parameter_type_id) VALUES (2, 2);
 INSERT INTO `DeviceTypeParameterType` (device_type_id, parameter_type_id) VALUES (2, 3);
 
-INSERT INTO `Parameter` (parameter_name, parameter_value, parameter_type_id) VALUES ('Temperature sensor 1', 0, 1);
-INSERT INTO `Parameter` (parameter_name, parameter_value, parameter_type_id) VALUES ('Humidity sensor 1', 0, 2);
-INSERT INTO `Parameter` (parameter_name, parameter_value, parameter_type_id) VALUES ('Battery level', 0, 3);
+INSERT INTO `Parameters` (parameter_name, parameter_value, parameter_type_id) VALUES ('Temperature sensor 1', 0, 1);
+INSERT INTO `Parameters` (parameter_name, parameter_value, parameter_type_id) VALUES ('Humidity sensor 1', 0, 2);
+INSERT INTO `Parameters` (parameter_name, parameter_value, parameter_type_id) VALUES ('Battery level', 0, 3);
 
 INSERT INTO `DeviceParameters` (device_id, parameter_id) VALUES (1, 1);
 INSERT INTO `DeviceParameters` (device_id, parameter_id) VALUES (4, 2);

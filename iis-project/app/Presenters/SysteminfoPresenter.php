@@ -72,7 +72,7 @@ class SysteminfoPresenter extends BasePresenter
     
             $paramDetails = [];
             foreach ($parameters as $param) {
-                $parameter = $this->database->table('Parameter')
+                $parameter = $this->database->table('Parameters')
                     ->get($param->parameter_id);
                 $paramDetails[] = [
                     'parameter_name' => $parameter->parameter_name,
@@ -90,6 +90,17 @@ class SysteminfoPresenter extends BasePresenter
     
         $this->template->devices = $deviceDetails;
     }
+
+    public function actionDeleteDevice(int $systemId, int $deviceId): void
+    {
+        // Perform the deletion
+        $this->database->table('DeviceSystem')->where('device_id', $deviceId)->delete();
+        $this->database->table('DeviceParameters')->where('device_id', $deviceId)->delete();
+        $this->database->table('Devices')->where('device_id', $deviceId)->delete();
+    
+        $this->flashMessage('Zařízení bylo odstraněno.', 'success');
+        $this->redirect('Systeminfo:showDevices', $systemId);
+    }    
 
     public function renderCreateDeviceType(int $systemId): void
     {
@@ -220,31 +231,36 @@ class SysteminfoPresenter extends BasePresenter
     {
         $form = new Form;
         $systemId = $this->getParameter('systemId');
-        
+        $paramTypes = $this->database->table('ParameterTypes')->fetchPairs('parameter_type_id', 'type_name');
 
         $form->addText('device_name', 'Název zařízení:')
-                ->setRequired('Prosím zadejte Název zařízení.')
+                ->setRequired('Prosím zadejte název zařízení.')
                 ->setHtmlAttribute('placeholder', 'Prosím zadejte název');
 
         $form->addText('device_description', 'Popis zařízení:')
-                ->setRequired('Prosím zadejte popis zařízení.')
                 ->setHtmlAttribute('placeholder', 'Prosím zadejte popis');
             
         $form->addText('device_type_name', 'Název typu zařízení:')
-                ->setRequired('Prosím zadejte Název typu zařízení.')
+                ->setRequired('Prosím zadejte název typu zařízení.')
                 ->setHtmlAttribute('placeholder', 'Prosím zadejte název typu');
 
         $form->addText('device_type_description', 'Popis typu zařízení:')
-                ->setRequired('Prosím zadejte popis typu zařízení.')
                 ->setHtmlAttribute('placeholder', 'Prosím zadejte popis typu');
-        
-        $parameters = $this->database->table('Parameter')->fetchPairs('parameter_id', 'parameter_name');
-        
-        $form->addMultiSelect('parameters', 'Parametry:')
-                ->setItems($parameters)
-                ->setRequired('Prosím vyberte alespoň jeden parameter.');
 
+        // $form->addText('parameter_name', 'Název parametru:')
+        //         ->setRequired('Prosím zadejte název parametru.')
+        //         ->setHtmlAttribute('placeholder', 'Prosím zadejte název');
         
+        // $parameters = $this->database->table('Parameters')->fetchPairs('parameter_id', 'parameter_name');
+        
+        $form->addMultiSelect('parameter_types', 'Typy parametrů:')
+                ->setItems($paramTypes)
+                ->setRequired('Prosím vyberte jeden typ parameteru nebo vytvořte nový.');
+
+        // $form->addText('parameter_value', 'Hodnota parametru:')
+        //         ->setHtmlAttribute('placeholder', 'Prosím zadejte hodnotu');
+
+
         $form->addHidden('systemId', $systemId);
 
         $form->addSubmit('create', 'Přidat zařízení');
@@ -274,21 +290,50 @@ class SysteminfoPresenter extends BasePresenter
             'device_type' => $values['device_name'], // Assuming device_type column is required
             'device_type_id' => $deviceTypeId,
             'description' => $values['device_description'],
-            'user_id' => $this->user->getId(), // You may adjust this based on your authentication logic
+            'user_id' => $this->user->getId(),
         ]);
         
         $deviceId = $deviceRow->getPrimary();
 
         // Associate selected parameters with the device
-        foreach ($values['parameters'] as $parameterId) {
-            $parameterTypeId = $this->database->table('Parameter')->get($parameterId)->parameter_type_id;
+        foreach ($values['parameter_types'] as $parameterTypeId) {
+            // Fetch the type name
+            $typeName = $this->database->table('ParameterTypes')
+                ->get($parameterTypeId)->type_name;
+        
+            // Fetch the latest parameter for this type and extract the number
+            $lastParameter = $this->database->table('Parameters')
+                ->where('parameter_type_id', $parameterTypeId)
+                ->order('parameter_id DESC')
+                ->limit(1)
+                ->fetch();
+        
+            $nextNumber = 1;
+            if ($lastParameter) {
+                $matches = [];
+                preg_match('/(\d+)$/', $lastParameter->parameter_name, $matches);
+                $nextNumber = isset($matches[1]) ? ((int) $matches[1]) + 1 : 1;
+            }
+        
+            // Format the parameter name
+            $parameterName = sprintf('%s_%02d', $typeName, $nextNumber);
+        
+            // Insert the new parameter
+            $insertedParameter = $this->database->table('Parameters')->insert([
+                'parameter_name' => $parameterName,
+                'parameter_type_id' => $parameterTypeId,
+            ]);
+
+            $lastInsertedParameterId = $insertedParameter->getPrimary();
+
             $this->database->table('DeviceTypeParameterType')->insert([
                 'device_type_id' => $deviceTypeId,
                 'parameter_type_id' => $parameterTypeId,
             ]);
+
             $this->database->table('DeviceParameters')->insert([
                 'device_id' => $deviceId,
-                'parameter_id' => $parameterId,
+                'parameter_id' => $lastInsertedParameterId,
             ]);
         }
         

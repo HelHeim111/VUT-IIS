@@ -9,6 +9,7 @@
                 <li>{$param['parameter_name']} --- {$param['parameter_value']}</li>
             {/foreach}
         </ul>
+        <a href="{link Systeminfo:deleteDevice, $systemId, $device['device_id']}">Smazat zařízení</a>
     </div>
 {/foreach}
     <button id="showDevices"><a href="{link Systeminfo:createDeviceType, $systemId}">Přidat zařízení s novým typem</a></button>
