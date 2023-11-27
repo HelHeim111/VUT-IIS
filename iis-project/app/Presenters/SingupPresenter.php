@@ -26,7 +26,6 @@ class SignupPresenter extends BasePresenter
     {
         $form = new Form;
 
-        // Add form fields
         $form->addText('username', 'Uživatelské jméno:')
             ->setRequired('Prosím zadejte uživatelské jméno.');
 
@@ -39,7 +38,6 @@ class SignupPresenter extends BasePresenter
 
         $form->addSubmit('register', 'Registrovat');
 
-        // Define what happens after form is submitted
         $form->onSuccess[] = [$this, 'signupFormSucceeded'];
 
         return $form;
@@ -47,23 +45,19 @@ class SignupPresenter extends BasePresenter
 
     public function signupFormSucceeded(Form $form, \stdClass $values): void
     {
-        // Process user registration
         if ($values->password !== $values->passwordVerify) {
             $this->flashMessage("Hesla se neshodují.", "error");
             return;
         }
 
-        // Check if the username already exists
         $existingUser = $this->database->table('Users')->where('username', $values->username)->fetch();
         if ($existingUser) {
             $form->addError('Uživatelské jméno již existuje.');
             return;
         }
 
-        // Hash the password
         $hashedPassword = $this->passwords->hash($values->password);
 
-        // Save the new user to the database
         $this->database->table('Users')->insert([
             'username' => $values->username,
             'password' => $hashedPassword,
@@ -71,6 +65,6 @@ class SignupPresenter extends BasePresenter
         ]);
 
         $this->flashMessage("Registrace byla úspěšná. Nyní se můžete přihlásit.", "success");
-        $this->redirect('Signin:default'); // Redirect to the login page
+        $this->redirect('Signin:default');
     }
 }
