@@ -54,6 +54,42 @@ class SysteminfoPresenter extends BasePresenter
         }
     }
 
+    public function renderShowDevices(int $systemId): void
+    {
+        $devices = $this->database->table('DeviceSystem')
+            ->where('system_id', $systemId)
+            ->fetchAll();
+    
+        $deviceDetails = [];
+        foreach ($devices as $deviceSystem) {
+            $device = $this->database->table('Devices')
+                ->get($deviceSystem->device_id);
+    
+            $parameters = $this->database->table('DeviceParameters')
+                ->where('device_id', $device->device_id)
+                ->fetchAll();
+    
+            $paramDetails = [];
+            foreach ($parameters as $param) {
+                $parameter = $this->database->table('Parameters')
+                    ->get($param->parameter_id);
+                $paramDetails[] = [
+                    'parameter_name' => $parameter->parameter_name,
+                    'parameter_value' => $parameter->parameter_value
+                ];
+            }
+    
+            $deviceDetails[] = [
+                'device_id' => $device->device_id,
+                'device_type' => $device->device_type,
+                'description' => $device->description,
+                'parameters' => $paramDetails
+            ];
+        }
+    
+        $this->template->devices = $deviceDetails;
+    } 
+
     protected function createComponentSystemEditForm(): Form
     {
         $form = new Form;

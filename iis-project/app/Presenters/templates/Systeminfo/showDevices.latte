@@ -1,0 +1,14 @@
+{extends '../@layout.latte'}
+{block content}
+{foreach $devices as $device}
+    <div>
+        <strong>{$device['device_type']} (ID: {$device['device_id']})</strong>:
+        <p>{$device['description']}</p>
+        <ul>
+            {foreach $device['parameters'] as $param}
+                <li>{$param['parameter_name']} --- {$param['parameter_value']}</li>
+            {/foreach}
+        </ul>
+    </div>
+{/foreach}
+{/block}

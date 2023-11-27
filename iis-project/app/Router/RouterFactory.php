@@ -16,13 +16,13 @@ final class RouterFactory
 	{
 		$router = new RouteList;
         $router->addRoute('signin', 'Signin:default');
-		$router->addRoute('<presenter>/<action>[/<id>]', 'Home:default');
+		$router->addRoute('<presenter>/<action>', 'Home:default');
 		$router->addRoute('signup', 'Signup:default');
 		$router->addRoute('admin/dashboard', 'Admin:dashboard');
 		$router->addRoute('signout', 'Signout:default');
 		$router->addRoute('systeminfo/<id>', 'Systeminfo:default');
+		$router->addRoute('systeminfo/showDevices', 'Systeminfo:showDevices');
 		$router->addRoute('usersystems', 'UserSystems:default');
-		$router->addRoute('systeminfo/updateSystem', 'Systeminfo:handleUpdateSystem');
 		return $router;
 	}
 }

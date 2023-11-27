@@ -64,20 +64,13 @@
         {else}
             <p>Tento systém v současné době nemá žádné uživatele</p>
         {/if}
-        
+
         <button id="showAddUserForm">Přidat uživatele</button>
         <div id="addUserForm" style="display: none;">
             {control addUserForm}
         </div>
-
-        {if $devices}
-            <h3>Zařízení:</h3>
-            {foreach $devices as $device}
-                <p>{$device->device_name}</p>
-            {/foreach}
-        {else}
-            <p>Tento systém v současné době nemá žádné zařízení</p>
-        {/if}
+        
+        <button id="showDevices"><a href="{link Systeminfo:showDevices, $systemId}">Zobrazit zařízení</a></button>
 
     {else}
         <p>System information is not available.</p>
@@ -88,7 +81,7 @@
 
 {block scripts}
     <script>
-
+    
         function bindShowFormButton() {
             var button = document.getElementById('showAddUserForm');
             if (button) {
