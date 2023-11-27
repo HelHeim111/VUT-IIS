@@ -476,7 +476,7 @@ class SysteminfoPresenter extends BasePresenter
             foreach ($parameters as $param) {
                 $parameter = $this->database->table('Parameters')
                                 ->get($param->parameter_id);
-                $kpiResults[$device->device_id][$parameter->parameter_id] = $this->KPI($values->value, $values->operator, $parameter->parameter_value);
+                $kpiResults[$parameter->parameter_id] = $this->KPI($values->value, $values->operator, $parameter->parameter_value);
             }
         }
     
