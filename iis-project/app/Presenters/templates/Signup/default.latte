@@ -5,8 +5,6 @@
 {block content}
     <nav>
         <a href="/">Home</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
         {if $user->isInRole('admin')}
                 <a href="{link Admin:dashboard}">Admin Dashboard</a>
         {/if}
@@ -23,7 +21,7 @@
         </div>
         {/if}
     </nav>
-    
+
     <div class="signup-form">
         <h1>Registrace nového účtu</h1>
 

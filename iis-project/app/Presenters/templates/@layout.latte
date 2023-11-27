@@ -1,47 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{ifset $title}{$title}{else}Hell Yeah{/ifset}</title>
+    <title>{ifset $title}{$title}{else}IIS - Informační systémy{/ifset}</title>
 
     <head>
         <style>
             body {
-                background-color: #1a0000;
-                color: #ff5733;
+                background-color: #f0f0f0;
+                color: #333;
                 font-family: 'Times New Roman', serif;
+                margin: 0;
             }
-
-            .required label { color: maroon }
 
             header {
                 max-width: 1200px;
                 margin: 0 auto;
-                height: 100px;
+                height: 80px;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                border: 2px solid #ff5733;
+                border-bottom: 2px solid #333;
                 padding: 10px;
-                background-color: #1a0000;
+                background-color: #fff;
             }
 
             nav a {
-                color: #ff3333;
+                color: #333;
                 text-decoration: none;
-                margin: 0 10px;
+                margin: 0 20px;
+                font-weight: bold;
             }
 
             nav {
-                background-color: #1a1a1a;
-                text-align: center;
+                background-color: #f0f0f0;
+                text-align: right;
                 padding: 10px;
             }
 
             header .logo a {
                 padding: 10px;
-                background-color: #ff5733;
+                background-color: #333;
                 color: #fff;
                 text-decoration: none;
                 border-radius: 5px;
@@ -50,31 +50,31 @@
 
             main {
                 max-width: 800px;
-                margin: 0 auto;
+                margin: 20px auto;
                 padding: 20px;
-                background-color: #1a0000;
-                box-shadow: 0 0 10px rgba(255, 87, 51, 0.5);
+                background-color: #fff;
+                box-shadow: 0 0 10px rgba(51, 51, 51, 0.1);
             }
 
             h1 {
-                color: #ff5733;
+                color: #333;
             }
 
             .system-item {
-                color: #ff5733;
+                color: #333;
             }
 
             footer {
-                background-color: #1a0000;
-                color: #ff5733;
+                background-color: #fff;
+                color: #333;
                 text-align: center;
                 padding: 10px;
                 font-size: 14px;
-                border-top: 1px solid #ff5733;
+                border-top: 2px solid #333;
             }
 
             footer a {
-                color: #ff5733;
+                color: #333;
                 text-decoration: none;
             }
         </style>
@@ -82,22 +82,17 @@
 </head>
 <body>
     <header>
-        <h1>Welcome to the Gym</h1>
+        <h1>IoT: správa zařízení</h1>
+        <nav>
+            <a href="/">Home</a>
+        </nav>
     </header>
-
-    <nav>
-        <a href="/">Home</a>
-    </nav>
 
     <main>
         {block content}
-            <p>Welcome to the darkest depths of the web.</p>
+            
         {/block}
     </main>
-
-    <footer>
-        &copy; {= date('Y') } Hellish Website. All souls reserved.
-    </footer>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://unpkg.com/naja@2/dist/Naja.min.js"></script>

@@ -4,8 +4,6 @@
 
     <nav>
         <a href="/">Home</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
         {if $user->isInRole('admin')}
                 <a href="{link Admin:dashboard}">Admin Dashboard</a>
         {/if}
@@ -22,7 +20,7 @@
         </div>
         {/if}
     </nav>
-    
+
     <body>
         <main>
             <h1>Welcome to the Hellish Devices!</h1>

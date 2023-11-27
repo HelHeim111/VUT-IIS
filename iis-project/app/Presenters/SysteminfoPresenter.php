@@ -203,6 +203,7 @@ class SysteminfoPresenter extends BasePresenter
 
                 $paramDetails[] = [
                     'parameter_name' => $parameter->parameter_name,
+                    'parameter_id' => $parameter->parameter_id,
                     'parameter_value' => $parameter->parameter_value
                 ];
             }

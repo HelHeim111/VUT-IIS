@@ -27,8 +27,8 @@ class UserSystemsPresenter extends BasePresenter
         $this->template->user = $user;
 
         if ($this->getUser()->isLoggedIn()) {
-            $userSystems = $this->database->table('UserSystems')
-                ->where('user_id', $userId)
+            $userSystems = $this->database->table('Systems')
+                ->where('admin_id', $userId)
                 ->fetchAll();
 
             $this->template->userSystems = $userSystems;

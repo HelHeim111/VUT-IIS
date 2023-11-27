@@ -10,7 +10,7 @@
                     <li>
                         {$param['parameter_name']} --- {$param['parameter_value']}
                         {control kpiForm}
-                        {if isset($kpiValue) && isset($kpiOperator)} TRUE {else} FALSE {/if}
+                        {if isset($kpiValue) && isset($kpiOperator) && $kpiResults[$param['parameter_id']]} TRUE {else} FALSE {/if}
                     </li>
                 {/foreach}
             </ul>
