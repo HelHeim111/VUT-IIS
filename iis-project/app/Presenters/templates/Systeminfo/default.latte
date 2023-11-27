@@ -36,16 +36,15 @@
     <!-- System Edit Form -->
     {snippet systemEditForm}
         {include 'systemInfoSnippet'}
-        {if ($user->isLoggedIn() && $system->admin_id == $user->getId()) || ($user->isLoggedIn() && $user->isInRole('admin'))}
-            {control systemEditForm}
-        {/if}
     {/snippet}
+    
+    {snippet addUserForm}
+    {/snippet}
+
 {/block}
 
 
-{snippet addUserForm}
-    {include 'systemInfoSnippet'}
-{/snippet}
+
 
 {define systemInfoSnippet}
     {if $system}
@@ -53,24 +52,30 @@
         <h2>Vlastník systému: {$systemOwner->username}</h2>
         <p>{$system->system_description}</p>
         
-        
-        {if $users}
-            <h3>Uživatelé:</h3>
-            {foreach $users as $us}
-                <p>{$us->username}
-                    <a href="{link delete, $systemId, $us->user_id}" onclick="return confirm('Opravdu chcete smazat uživatele?');">Smazat</a>
-                </p>
-            {/foreach}
-        {else}
-            <p>Tento systém v současné době nemá žádné uživatele</p>
-        {/if}
+        {if $user->isLoggedIn() && ($user->isInRole('admin') || $user->getId() == $systemOwner->user_id)}
+            {if $users}
+                <h3>Uživatelé:</h3>
+                {foreach $users as $us}
+                    <p>{$us->username}
+                        <a href="{link delete, $systemId, $us->user_id}" onclick="return confirm('Opravdu chcete smazat uživatele?');">Smazat</a>
+                    </p>
+                {/foreach}
+            {else}
+                <p>Tento systém v současné době nemá žádné uživatele</p>
+            {/if}
 
-        <button id="showAddUserForm">Přidat uživatele</button>
-        <div id="addUserForm" style="display: none;">
-            {control addUserForm}
-        </div>
-        
-        <button id="showDevices"><a href="{link Systeminfo:showDevices, $systemId}">Zobrazit zařízení</a></button>
+            <button id="showAddUserForm">Přidat uživatele</button>
+            <div id="addUserForm" style="display: none;">
+                {control addUserForm}
+            </div>
+            
+            <button id="showSystemEditForm">Upravit informaci o systemu</button>
+            <div id="systemEditForm" style="display: none;">
+                {control systemEditForm}
+            </div>
+            
+            <button id="showDevices"><a href="{link Systeminfo:showDevices, $systemId}">Zobrazit zařízení</a></button>
+        {/if}
 
     {else}
         <p>System information is not available.</p>
@@ -83,15 +88,29 @@
     <script>
     
         function bindShowFormButton() {
-            var button = document.getElementById('showAddUserForm');
-            if (button) {
-                button.removeEventListener('click', toggleForm); // Remove existing listener to prevent duplicates
-                button.addEventListener('click', toggleForm);
+            var showAddUserForm = document.getElementById('showAddUserForm');
+            if (showAddUserForm) {
+                showAddUserForm.removeEventListener('click', toggleAddUserForm); // Remove existing listener to prevent duplicates
+                showAddUserForm.addEventListener('click', toggleAddUserForm);
+            }
+
+            var showSystemEditForm = document.getElementById('showSystemEditForm');
+            if (showSystemEditForm) {
+                showSystemEditForm.removeEventListener('click', toggleSystemEditForm); // Remove existing listener to prevent duplicates
+                showSystemEditForm.addEventListener('click', toggleSystemEditForm);
             }
         }
 
-        function toggleForm() {
-            var form = document.getElementById('addUserForm');
+        function toggleAddUserForm() {
+            toggleForm('addUserForm');
+        }
+
+        function toggleSystemEditForm() {
+            toggleForm('systemEditForm');
+        }
+
+        function toggleForm(formId) {
+            var form = document.getElementById(formId);
             if (form) {
                 form.style.display = form.style.display === 'none' ? 'block' : 'none';
             }
@@ -113,7 +132,7 @@
                 console.log('AJAX request failed', event);
             });
 
-            bindShowFormButton(); // Bind the event listener on page load
+            bindShowFormButton();
 
             // Re-bind the event listener after Naja updates the page
             naja.snippetHandler.addEventListener('afterUpdate', function () {

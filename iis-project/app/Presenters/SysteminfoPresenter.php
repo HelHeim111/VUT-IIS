@@ -238,7 +238,7 @@ class SysteminfoPresenter extends BasePresenter
                 ->setRequired('Prosím zadejte popis typu zařízení.')
                 ->setHtmlAttribute('placeholder', 'Prosím zadejte popis typu');
         
-        $parameters = $this->database->table('Parameter')->fetchPairs('parameter_id', 'parameter_name'); 
+        $parameters = $this->database->table('Parameter')->fetchPairs('parameter_id', 'parameter_name');
         
         $form->addMultiSelect('parameters', 'Parametry:')
                 ->setItems($parameters)
@@ -277,13 +277,18 @@ class SysteminfoPresenter extends BasePresenter
             'user_id' => $this->user->getId(), // You may adjust this based on your authentication logic
         ]);
         
-        $deviceId  = $deviceRow->getPrimary();
+        $deviceId = $deviceRow->getPrimary();
 
         // Associate selected parameters with the device
         foreach ($values['parameters'] as $parameterId) {
+            $parameterTypeId = $this->database->table('Parameter')->get($parameterId)->parameter_type_id;
             $this->database->table('DeviceTypeParameterType')->insert([
                 'device_type_id' => $deviceTypeId,
-                'parameter_type_id' => $parameterId,
+                'parameter_type_id' => $parameterTypeId,
+            ]);
+            $this->database->table('DeviceParameters')->insert([
+                'device_id' => $deviceId,
+                'parameter_id' => $parameterId,
             ]);
         }
         
