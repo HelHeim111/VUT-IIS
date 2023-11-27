@@ -8,6 +8,7 @@ use Nette;
 use Nette\Application\UI\Form;
 use Nette\Security\User;
 use Nette\Database\Context;
+use Nette\ComponentModel\IComponent;
 
 class SysteminfoPresenter extends BasePresenter
 {
@@ -442,46 +443,80 @@ class SysteminfoPresenter extends BasePresenter
         }
     }
 
-    protected function createComponentKpiForm(): Form
+    protected function createComponent(string $name): ?IComponent
     {
-        $form = new Form;
-        $form->addText('value', 'Hodnota:')
-              ->setRequired('Prosím zadejte hodnotu.')
-              ->addRule(Form::FLOAT, 'Hodnota musí být číslo.');
-    
-        $form->addSelect('operator', 'Operátor:', ['<' => 'Menší', '>' => 'Větší', '=' => 'Rovno', '>=' => 'Menší nebo rovno', '<=' => 'Větší nebo rovno'])
-             ->setRequired('Prosím vyberte operátor.');
-    
-        $form->addSubmit('submit', 'Zkontrolovat');
-        $form->onSuccess[] = [$this, 'kpiFormSucceeded'];
-        
-        return $form;
+        if (strncmp($name, 'kpiForm', 7) === 0) {
+            $parameterId = (int)substr($name, 7);
+
+            $form = new Form;
+            $form->addText('value', 'Hodnota:')
+                ->setRequired('Prosím zadejte hodnotu.')
+                ->addRule(Form::FLOAT, 'Hodnota musí být číslo.');
+            
+            $form->addSelect('operator', 'Operátor:', [
+                '<' => 'Menší', 
+                '>' => 'Větší', 
+                '=' => 'Rovno', 
+                '>=' => 'Menší nebo rovno', 
+                '<=' => 'Větší nebo rovno'
+            ])->setRequired('Prosím vyberte operátor.');
+            
+            $form->addSubmit('submit', 'Zkontrolovat');
+            $form->onSuccess[] = function (Form $form, $values) use ($parameterId) {
+                $this->kpiFormSucceeded($form, $values, $parameterId);
+            };
+
+            return $form;
+        }
+
+        return parent::createComponent($name);
     }
 
-    public function kpiFormSucceeded(Form $form, \stdClass $values): void
+    protected function createComponentKpiForm()
     {
-        $systemId = $this->getParameter('systemId');
+        $forms = [];
+
         $devices = $this->database->table('DeviceSystem')
-                    ->where('system_id', $systemId)
-                    ->fetchAll();
-        
-        $kpiResults = [];
+                                  ->where('system_id', $this->getParameter('systemId'))
+                                  ->fetchAll();
+
         foreach ($devices as $deviceSystem) {
-            $device = $this->database->table('Devices')
-                        ->get($deviceSystem->device_id);
-    
             $parameters = $this->database->table('DeviceParameters')
-                            ->where('device_id', $device->device_id)
-                            ->fetchAll();
-    
+                                         ->where('device_id', $deviceSystem->device_id)
+                                         ->fetchAll();
+
             foreach ($parameters as $param) {
-                $parameter = $this->database->table('Parameters')
-                                ->get($param->parameter_id);
-                $kpiResults[$parameter->parameter_id] = $this->KPI($values->value, $values->operator, $parameter->parameter_value);
+                $form = new Form;
+                $form->addText('value', 'Hodnota:')
+                        ->setRequired('Prosím zadejte hodnotu.')
+                        ->addRule(Form::FLOAT, 'Hodnota musí být číslo.');
+            
+                $form->addSelect('operator', 'Operátor:', ['<' => 'Menší', '>' => 'Větší', '=' => 'Rovno', '>=' => 'Menší nebo rovno', '<=' => 'Větší nebo rovno'])
+                    ->setRequired('Prosím vyberte operátor.');
+            
+                $form->addSubmit('submit', 'Zkontrolovat');
+                $form->onSuccess[] = [$this, 'kpiFormSucceeded'];
+
+                $forms['kpiForm' . $param->parameter_id] = $form;
             }
         }
+
+        return $forms;
+    }
     
-        $this->template->kpiResults = $kpiResults;
+
+    public function kpiFormSucceeded(Form $form, \stdClass $values, $parameterId): void
+    {
+        $parameter = $this->database->table('Parameters')->get($parameterId);
+        if (!$parameter) {
+            throw new Nette\Application\BadRequestException("Parameter not found", 404);
+        }
+    
+        // Вычисляем KPI только для конкретного параметра
+        $kpiResult = $this->KPI($values->value, $values->operator, $parameter->parameter_value);
+    
+        // Обновляем результаты KPI только для этого параметра
+        $this->template->kpiResults[$parameterId] = $kpiResult;
         $this->template->kpiValue = $values->value;
         $this->template->kpiOperator = $values->operator;
         $this->redrawControl('deviceList');

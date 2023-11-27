@@ -9,8 +9,12 @@
                 {foreach $device['parameters'] as $param}
                     <li>
                         {$param['parameter_name']} --- {$param['parameter_value']}
-                        {control kpiForm}
-                        {if isset($kpiValue) && isset($kpiOperator) && $kpiResults[$param['parameter_id']]} TRUE {else} FALSE {/if}
+                        <li>
+                            {control 'kpiForm' . $param['parameter_id']}
+                        </li>
+                                {if isset($kpiResults[$param['parameter_id']])}
+                                    {$kpiResults[$param['parameter_id']] ? 'TRUE' : 'FALSE'}
+                                {/if}
                     </li>
                 {/foreach}
             </ul>
