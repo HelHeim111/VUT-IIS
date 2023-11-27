@@ -56,6 +56,7 @@ class SysteminfoPresenter extends BasePresenter
 
     public function renderShowDevices(int $systemId): void
     {
+        $this->template->systemId = $systemId;
         $devices = $this->database->table('DeviceSystem')
             ->where('system_id', $systemId)
             ->fetchAll();
@@ -88,7 +89,13 @@ class SysteminfoPresenter extends BasePresenter
         }
     
         $this->template->devices = $deviceDetails;
-    } 
+    }
+
+    public function renderCreateDeviceType(int $systemId): void
+    {
+        $this->template->systemId = $systemId;
+
+    }
 
     protected function createComponentSystemEditForm(): Form
     {
@@ -207,6 +214,86 @@ class SysteminfoPresenter extends BasePresenter
 
         $this->flashMessage('Uživatel byl odstraněn ze systému.', 'success');
         $this->redirect('Systeminfo:default', $systemId);
+    }
+
+    protected function createComponentCreateDeviceType(): Form
+    {
+        $form = new Form;
+        $systemId = $this->getParameter('systemId');
+        
+
+        $form->addText('device_name', 'Název zařízení:')
+                ->setRequired('Prosím zadejte Název zařízení.')
+                ->setHtmlAttribute('placeholder', 'Prosím zadejte název');
+
+        $form->addText('device_description', 'Popis zařízení:')
+                ->setRequired('Prosím zadejte popis zařízení.')
+                ->setHtmlAttribute('placeholder', 'Prosím zadejte popis');
+            
+        $form->addText('device_type_name', 'Název typu zařízení:')
+                ->setRequired('Prosím zadejte Název typu zařízení.')
+                ->setHtmlAttribute('placeholder', 'Prosím zadejte název typu');
+
+        $form->addText('device_type_description', 'Popis typu zařízení:')
+                ->setRequired('Prosím zadejte popis typu zařízení.')
+                ->setHtmlAttribute('placeholder', 'Prosím zadejte popis typu');
+        
+        $parameters = $this->database->table('Parameter')->fetchPairs('parameter_id', 'parameter_name'); 
+        
+        $form->addMultiSelect('parameters', 'Parametry:')
+                ->setItems($parameters)
+                ->setRequired('Prosím vyberte alespoň jeden parameter.');
+
+        
+        $form->addHidden('systemId', $systemId);
+
+        $form->addSubmit('create', 'Přidat zařízení');
+
+        $form->onSuccess[] = [$this, 'createDeviceTypeFormSucceeded'];
+
+        return $form;
+    }
+
+    public function createDeviceTypeFormSucceeded(Form $form, array $values): void
+    {
+        $systemId = $values['systemId'];
+
+        // Process the form data and save it to the database
+        $deviceTypeName = $values['device_type_name'];
+        $deviceTypeDescription = $values['device_type_description'];
+    
+        // Create a new device type
+        $deviceTypeRow = $this->database->table('DeviceTypes')->insert([
+            'type_name' => $deviceTypeName,
+            'description' => $deviceTypeDescription,
+        ]);
+            
+        $deviceTypeId = $deviceTypeRow->getPrimary();
+        // Create a new device
+        $deviceRow = $this->database->table('Devices')->insert([
+            'device_type' => $values['device_name'], // Assuming device_type column is required
+            'device_type_id' => $deviceTypeId,
+            'description' => $values['device_description'],
+            'user_id' => $this->user->getId(), // You may adjust this based on your authentication logic
+        ]);
+        
+        $deviceId  = $deviceRow->getPrimary();
+
+        // Associate selected parameters with the device
+        foreach ($values['parameters'] as $parameterId) {
+            $this->database->table('DeviceTypeParameterType')->insert([
+                'device_type_id' => $deviceTypeId,
+                'parameter_type_id' => $parameterId,
+            ]);
+        }
+        
+        $this->database->table('DeviceSystem')->insert([
+            'device_id' => $deviceId,
+            'system_id' => $systemId,
+        ]);
+
+        $this->flashMessage('Zařízení bylo úspěšně přidáno.', 'success');
+        $this->redirect('Systeminfo:showDevices', $systemId);
     }
 
 }
