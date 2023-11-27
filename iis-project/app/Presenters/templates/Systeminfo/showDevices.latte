@@ -1,17 +1,23 @@
 {extends '../@layout.latte'}
+
 {block content}
-{foreach $devices as $device}
-    <div>
-        <strong>{$device['device_type']} (ID: {$device['device_id']})</strong>:
-        <p>{$device['description']}</p>
-        <ul>
-            {foreach $device['parameters'] as $param}
-                <li>{$param['parameter_name']} --- {$param['parameter_value']}</li>
-            {/foreach}
-        </ul>
-        <a href="{link Systeminfo:deleteDevice, $systemId, $device['device_id']}">Smazat zařízení</a>
-    </div>
-{/foreach}
-    <button id="showDevices"><a href="{link Systeminfo:createDeviceType, $systemId}">Přidat zařízení s novým typem</a></button>
-    <button id="goBack"><a href="{link Systeminfo:default, $systemId}">Zpět do systemu</a></button>
+    {foreach $devices as $device}
+        <div>
+            <strong>{$device['device_type']} (ID: {$device['device_id']})</strong>:
+            <p>{$device['description']}</p>
+            <ul>
+                {foreach $device['parameters'] as $param}
+                    <li>
+                        {$param['parameter_name']} --- {$param['parameter_value']}
+                        {control kpiForm}
+                        {if isset($kpiValue) && isset($kpiOperator)} TRUE {else} FALSE {/if}
+                    </li>
+                {/foreach}
+            </ul>
+            <button id="deleteDevice"><a href="{link Systeminfo:deleteDevice, $systemId, $device['device_id']}">Smazat zařízení</a></button>
+            <button id="editDevice"><a href="{link Systeminfo:editDevice, $systemId, $device['device_id']}">Editovat zařízení</a></button>
+        </div>
+    {/foreach}
+        <button id="showDevices"><a href="{link Systeminfo:createDeviceType, $systemId}">Přidat zařízení s novým typem</a></button>
+        <button id="goBack"><a href="{link Systeminfo:default, $systemId}">Zpět do systemu</a></button>
 {/block}

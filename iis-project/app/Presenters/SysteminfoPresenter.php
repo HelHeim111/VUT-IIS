@@ -182,6 +182,7 @@ class SysteminfoPresenter extends BasePresenter
     public function renderShowDevices(int $systemId): void
     {
         $this->template->systemId = $systemId;
+
         $devices = $this->database->table('DeviceSystem')
             ->where('system_id', $systemId)
             ->fetchAll();
@@ -198,7 +199,8 @@ class SysteminfoPresenter extends BasePresenter
             $paramDetails = [];
             foreach ($parameters as $param) {
                 $parameter = $this->database->table('Parameters')
-                    ->get($param->parameter_id);
+                ->get($param->parameter_id);
+
                 $paramDetails[] = [
                     'parameter_name' => $parameter->parameter_name,
                     'parameter_value' => $parameter->parameter_value
@@ -345,5 +347,143 @@ class SysteminfoPresenter extends BasePresenter
         $this->flashMessage('Zařízení bylo úspěšně přidáno.', 'success');
         $this->redirect('Systeminfo:showDevices', $systemId);
     }
+
+    public function actionEditDevice(int $systemId, int $deviceId): void
+    {
+        // Make sure the device exists
+        $device = $this->database->table('Devices')->get($deviceId);
+        if (!$device) {
+            $this->flashMessage('Zařízení nenalezeno.', 'error');
+            $this->redirect('Systeminfo:default');
+        }
+    
+        $this->template->device = $device;
+        $this->template->systemId = $systemId;
+    }
+
+    protected function createComponentEditDeviceForm(): Form
+    {
+        $form = new Form;
+        $systemId = $this->getParameter('systemId');
+        // Assuming you pass the device ID to the form in some way (e.g., query parameter)
+        $deviceId = $this->getParameter('deviceId');
+        $device = $this->database->table('Devices')->get($deviceId);
+
+        $form->addText('device_name', 'Název zařízení')
+            ->setDefaultValue($device->device_type)
+            ->setRequired('Prosím zadejte název zařízení.');
+
+        $form->addTextArea('device_description', 'Popis')
+            ->setDefaultValue($device->description);
+
+        // Add parameters dynamically based on the device
+        $parameters = $this->database->table('DeviceParameters')
+                        ->where('device_id', $deviceId)
+                        ->fetchAll();
+
+        foreach ($parameters as $param) {
+            $pararam = $this->database->table('Parameters')->get($param->parameter_id);
+            $form->addText('param_' . $param->parameter_id, 'Parameter: ' . $pararam->parameter_name)
+                ->setDefaultValue($pararam->parameter_value);
+        }
+        
+        $form->addHidden('systemId', $systemId);
+        $form->addSubmit('submit', 'Uložit změny');
+        $form->onSuccess[] = [$this, 'editDeviceFormSucceeded'];
+
+        return $form;
+    }
+
+    public function editDeviceFormSucceeded(Form $form, array $values): void
+    {
+        $deviceId = $this->getParameter('deviceId');
+        $systemId = $values['systemId'];
+        
+        $this->database->table('Devices')
+            ->where('device_id', $deviceId)
+            ->update([
+                'device_type' => $values['device_name'],
+                'description' => $values['device_description'],
+            ]);
+    
+        // Update parameters
+        foreach ($values as $key => $value) {
+            if (strpos($key, 'param_') === 0) {
+                $paramId = substr($key, 6);
+                $this->database->table('Parameters')
+                    ->where('parameter_id', $paramId)
+                    ->update(['parameter_value' => $value]);
+            }
+        }
+    
+        $this->flashMessage('Zařízení bylo úspěšně aktualizováno.', 'success');
+        $this->redirect('Systeminfo:showDevices', $systemId);
+    }
+
+    public function KPI(float $value, string $operator, float $deviceValue): bool
+    {
+        if (!$value) {
+            $value = 0;
+        }
+        switch ($operator) {
+            case '<':
+                return $deviceValue < $value;
+            case '>':
+                return $deviceValue > $value;
+            case '=':
+                return $deviceValue == $value;
+            case '>=':
+                return $deviceValue >= $value;
+            case '<=':
+                return $deviceValue <= $value;
+            default:
+                throw new \InvalidArgumentException("Invalid operator");
+        }
+    }
+
+    protected function createComponentKpiForm(): Form
+    {
+        $form = new Form;
+        $form->addText('value', 'Hodnota:')
+              ->setRequired('Prosím zadejte hodnotu.')
+              ->addRule(Form::FLOAT, 'Hodnota musí být číslo.');
+    
+        $form->addSelect('operator', 'Operátor:', ['<' => 'Menší', '>' => 'Větší', '=' => 'Rovno', '>=' => 'Menší nebo rovno', '<=' => 'Větší nebo rovno'])
+             ->setRequired('Prosím vyberte operátor.');
+    
+        $form->addSubmit('submit', 'Zkontrolovat');
+        $form->onSuccess[] = [$this, 'kpiFormSucceeded'];
+        
+        return $form;
+    }
+
+    public function kpiFormSucceeded(Form $form, \stdClass $values): void
+    {
+        $systemId = $this->getParameter('systemId');
+        $devices = $this->database->table('DeviceSystem')
+                    ->where('system_id', $systemId)
+                    ->fetchAll();
+        
+        $kpiResults = [];
+        foreach ($devices as $deviceSystem) {
+            $device = $this->database->table('Devices')
+                        ->get($deviceSystem->device_id);
+    
+            $parameters = $this->database->table('DeviceParameters')
+                            ->where('device_id', $device->device_id)
+                            ->fetchAll();
+    
+            foreach ($parameters as $param) {
+                $parameter = $this->database->table('Parameters')
+                                ->get($param->parameter_id);
+                $kpiResults[$device->device_id][$parameter->parameter_id] = $this->KPI($values->value, $values->operator, $parameter->parameter_value);
+            }
+        }
+    
+        $this->template->kpiResults = $kpiResults;
+        $this->template->kpiValue = $values->value;
+        $this->template->kpiOperator = $values->operator;
+        $this->redrawControl('deviceList');
+    }     
 
 }

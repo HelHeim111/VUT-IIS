@@ -1,0 +1,7 @@
+{extends '../@layout.latte'}
+
+{block content}
+    <h2>Editovat zařízení {$device->device_type}</h2>
+    {control editDeviceForm}
+    <button id="goBack"><a href="{link Systeminfo:showDevices, $systemId}">Zpět do systemu</a></button>
+{/block}

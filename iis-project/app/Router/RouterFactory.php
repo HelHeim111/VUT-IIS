@@ -22,7 +22,7 @@ final class RouterFactory
 		$router->addRoute('signout', 'Signout:default');
 		$router->addRoute('systeminfo/<id>', 'Systeminfo:default');
 		$router->addRoute('systeminfo/showDevices', 'Systeminfo:showDevices');
-		$router->addRoute('systeminfo/createDeviceType', 'Systeminfo:showDevices');
+		$router->addRoute('systeminfo/editDevice', 'Systeminfo:editDevice');
 		$router->addRoute('usersystems', 'UserSystems:default');
 		return $router;
 	}
