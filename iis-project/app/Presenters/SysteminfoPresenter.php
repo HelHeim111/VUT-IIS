@@ -115,7 +115,6 @@ class SysteminfoPresenter extends BasePresenter
         $existingUserIds[] = $this->database->table('Systems')
             ->get($this->getParameter('systemId'))->admin_id;
 
-        // Fetch usernames excluding the ones in the existingUserIds array
         $userNames = $this->database->table('Users')
             ->where('user_id NOT IN ?', $existingUserIds)
             ->fetchPairs('user_id', 'username');
@@ -250,19 +249,10 @@ class SysteminfoPresenter extends BasePresenter
 
         $form->addText('device_type_description', 'Popis typu zařízení:')
                 ->setHtmlAttribute('placeholder', 'Prosím zadejte popis typu');
-
-        // $form->addText('parameter_name', 'Název parametru:')
-        //         ->setRequired('Prosím zadejte název parametru.')
-        //         ->setHtmlAttribute('placeholder', 'Prosím zadejte název');
-        
-        // $parameters = $this->database->table('Parameters')->fetchPairs('parameter_id', 'parameter_name');
         
         $form->addMultiSelect('parameter_types', 'Typy parametrů:')
                 ->setItems($paramTypes)
                 ->setRequired('Prosím vyberte jeden typ parameteru nebo vytvořte nový.');
-
-        // $form->addText('parameter_value', 'Hodnota parametru:')
-        //         ->setHtmlAttribute('placeholder', 'Prosím zadejte hodnotu');
 
 
         $form->addHidden('systemId', $systemId);
@@ -278,20 +268,17 @@ class SysteminfoPresenter extends BasePresenter
     {
         $systemId = $values['systemId'];
 
-        // Process the form data and save it to the database
         $deviceTypeName = $values['device_type_name'];
         $deviceTypeDescription = $values['device_type_description'];
     
-        // Create a new device type
         $deviceTypeRow = $this->database->table('DeviceTypes')->insert([
             'type_name' => $deviceTypeName,
             'description' => $deviceTypeDescription,
         ]);
             
         $deviceTypeId = $deviceTypeRow->getPrimary();
-        // Create a new device
         $deviceRow = $this->database->table('Devices')->insert([
-            'device_type' => $values['device_name'], // Assuming device_type column is required
+            'device_type' => $values['device_name'], 
             'device_type_id' => $deviceTypeId,
             'description' => $values['device_description'],
             'user_id' => $this->user->getId(),
@@ -299,13 +286,10 @@ class SysteminfoPresenter extends BasePresenter
         
         $deviceId = $deviceRow->getPrimary();
 
-        // Associate selected parameters with the device
         foreach ($values['parameter_types'] as $parameterTypeId) {
-            // Fetch the type name
             $typeName = $this->database->table('ParameterTypes')
                 ->get($parameterTypeId)->type_name;
         
-            // Fetch the latest parameter for this type and extract the number
             $lastParameter = $this->database->table('Parameters')
                 ->where('parameter_type_id', $parameterTypeId)
                 ->order('parameter_id DESC')
@@ -319,10 +303,8 @@ class SysteminfoPresenter extends BasePresenter
                 $nextNumber = isset($matches[1]) ? ((int) $matches[1]) + 1 : 1;
             }
         
-            // Format the parameter name
             $parameterName = sprintf('%s_%02d', $typeName, $nextNumber);
         
-            // Insert the new parameter
             $insertedParameter = $this->database->table('Parameters')->insert([
                 'parameter_name' => $parameterName,
                 'parameter_type_id' => $parameterTypeId,
@@ -352,7 +334,6 @@ class SysteminfoPresenter extends BasePresenter
 
     public function actionEditDevice(int $systemId, int $deviceId): void
     {
-        // Make sure the device exists
         $device = $this->database->table('Devices')->get($deviceId);
         if (!$device) {
             $this->flashMessage('Zařízení nenalezeno.', 'error');
@@ -367,7 +348,6 @@ class SysteminfoPresenter extends BasePresenter
     {
         $form = new Form;
         $systemId = $this->getParameter('systemId');
-        // Assuming you pass the device ID to the form in some way (e.g., query parameter)
         $deviceId = $this->getParameter('deviceId');
         $device = $this->database->table('Devices')->get($deviceId);
 
@@ -378,7 +358,6 @@ class SysteminfoPresenter extends BasePresenter
         $form->addTextArea('device_description', 'Popis')
             ->setDefaultValue($device->description);
 
-        // Add parameters dynamically based on the device
         $parameters = $this->database->table('DeviceParameters')
                         ->where('device_id', $deviceId)
                         ->fetchAll();
@@ -408,7 +387,6 @@ class SysteminfoPresenter extends BasePresenter
                 'description' => $values['device_description'],
             ]);
     
-        // Update parameters
         foreach ($values as $key => $value) {
             if (strpos($key, 'param_') === 0) {
                 $paramId = substr($key, 6);
@@ -512,10 +490,8 @@ class SysteminfoPresenter extends BasePresenter
             throw new Nette\Application\BadRequestException("Parameter not found", 404);
         }
     
-        // Вычисляем KPI только для конкретного параметра
         $kpiResult = $this->KPI($values->value, $values->operator, $parameter->parameter_value);
     
-        // Обновляем результаты KPI только для этого параметра
         $this->template->kpiResults[$parameterId] = $kpiResult;
         $this->template->kpiValue = $values->value;
         $this->template->kpiOperator = $values->operator;
