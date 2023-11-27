@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<title>Projekt IIS</title>
+<style type="text/css">
+table { border-collapse: collapse; }
+td, th { border: 1px solid black; padding: 0.3em 0.5em; text-align: left; }
+dt { font-weight: bold; margin-top: 0.5em; }
+</style>
+</head>
+<body>
+
+<!-- Zkontrolujte prosím nastavení kódování v hlavičce dokumentu
+podle použitého editoru -->
+
+<h1>IoT: správa zařízení</h1> <!-- Nahradte názvem svého zadání -->
+
+<dl>
+<dt>Autoři</dt>
+<dd>Denys Petrovskyi <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
+<a href="mailto:xpetro27@stud.fit.vutbr.cz">xpetro27@stud.fit.vutbr.cz</a> -
+velitel týmu, zodpovědný za práci s databází, vytváření nových systémů a úpravy stávajících
+</dd>
+<dd>Vsevolod Tiemnohorov <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
+<a href="mailto:xtiemn00@stud.fit.vutbr.cz">xtiemn00@stud.fit.vutbr.cz</a> -
+zodpovědný za implementaci admin dashboard, přidávání nových zařízení do systému, KPI a pohled pro brokera
+</dd>
+<dt>URL aplikace</dt>
+<dd><a href="https://iis.fly.dev/">https://iis.fly.dev/</a></dd>  <!--to do-->
+</dl>
+
+<h2>Uživatelé systému pro testování</h2>
+<p>
+    Pro role <strong>testUser</strong> existují účty s přidanou číslovkou od 1 do 4 na konci. Pro ně platí, že mají stejná hesla.
+    <strong>Příklad: </strong> lze se přihlásit jako 'testUser3' pomocí hesla 'password'.
+</p>
+<table>
+<tr><th>Login</th><th>Heslo</th><th>Role</th></tr>
+<tr><td>admin</td><td>password</td><td>Administrátor</td></tr>
+<tr><td>testBroker</td><td>password</td><td>Broker</td></tr>
+<tr><td>testUser1</td><td>password</td><td>Uživatel</td></tr>
+</table>
+
+<p>
+    Administrátor má kromě vlastních práv i práva všech ostatních rolí
+ </p>
+
+<h3>Video</h3>
+<!--to do-->
+<p>
+   <a href="https://drive.google.com/file/d/1WOEr0faNdNyg8q1-Zam4sX-Ze-kCf4aW/view?usp=share_link">Odkaz na video</a>
+</p>
+
+Timekody:
+<ul>
+   <li>00:00 - nepřihlášený uživatel</li>
+   <li>00:18 - role Student</li>
+   <li>01:41 - role Učitel</li>
+   <li>05:56 - role Admin</li>
+   <li>08:52 - aktivace účtu</li>
+</ul>
+
+<h2>Implementace</h2>
+
+<p>K implementaci front-endu byl využitý PHP framework Nette a k implementaci back-endu a komunikaci s databází bylo použito PHP.</p>
+
+<p>
+    Využíváme základní složkovou strukturu, která byla vytvořena při nastavování nového Nette projektu. Práce s databází se nachází ve složce database.
+</p>
+
+ <p>
+    Nejdůležitějším adresářem je app. V něm jsou uloženy složky, které implementují backend a frontend. 
+    Soubor Bootstrap.php je důležitou součástí projektu, protože je zodpovědný za inicializaci aplikace. 
+    Soubor Router/RouterFactory.php obsahuje informace o cestách pro navigaci na různé stránky aplikace. 
+    Složka Presenters obsahuje soubory, které jsou zodpovědné za hlavní funkcionalitu aplikace a také v nich probíhá komunikace s databází. 
+    Například HomePresenter.php má metody, které přenesou všechny potřebné informace z databáze a také umožní správci mazat systémy. 
+    Složka šablon obsahuje soubory, které jsou zodpovědné za frontend, soubor @layout.latte je šablona, která se používá ve všech ostatních souborech .latte.
+ </p>
+
+<h3>Databáze</h3>
+
+<ul>
+   <li><a href="https://drive.google.com/file/d/1qQRMulRStR1HbSZpO3tWE-7YUcrCsxyX/view?usp=share_link">Původní ER diagram</a></li>
+   <li><a href="https://drive.google.com/file/d/16uRi-KU9-b7cIVmOrOpQf7zcrWCRJ9bu/view?usp=share_link">Výsledný model relační databáze</a></li>
+</ul>
+
+<p>
+   Schémata tabulek jsou ve složce <strong>database/migrations</strong>.
+</p>
+
+<p>
+   Jako databázový systém použiváme <strong>mySQL</strong>.
+</p>
+
+<h2>Instalace</h2>
+
+Požadavky:
+<ul>
+   <li>PHP >= 8.1</li>
+</ul>
+
+Postup instalace:
+<ol>
+   <li>Rozbalit archiv s projektem</li>
+   <li>Přesunout obsah do kořenového adresaře webu</li>
+   <li>Příkazem <strong>composer install</strong> nainstalovat vsechny závislosti</li>
+   <li>Zkopirovat obsah souboru <strong>.env.example</strong> do <strong>.env</strong></li>
+   <li>V <strong>.env</strong> souboru nastavit přípojení k databáze</li>
+   <li>Vygenerovat klíč aplikace příkazem <strong>php artisan key:generate</strong></li>
+   <li>Vygenerovat databázové tabulky a předem definovaná data příkazem <strong>php artisan migrate --seed</strong></li>
+   <li>Spustit projekt příkazem <strong>php artisan serve</strong></li>
+</ol>
+
+<h2>Známé problémy</h2>
+<p>-</p>
+
+</body>
+</html>
