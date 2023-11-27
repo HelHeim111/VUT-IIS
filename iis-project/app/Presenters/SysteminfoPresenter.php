@@ -66,8 +66,8 @@ class SysteminfoPresenter extends BasePresenter
             $device = $this->database->table('Devices')
                 ->get($deviceSystem->device_id);
     
-            $parameters = $this->database->table('DeviceParameters')
-                ->where('device_id', $device->device_id)
+            $parameters = $this->database->table('DeviceTypeParameters')
+                ->where('device_type_id', $device->device_id)
                 ->fetchAll();
     
             $paramDetails = [];
@@ -281,9 +281,9 @@ class SysteminfoPresenter extends BasePresenter
 
         // Associate selected parameters with the device
         foreach ($values['parameters'] as $parameterId) {
-            $this->database->table('DeviceTypeParameterType')->insert([
+            $this->database->table('DeviceTypeParameters')->insert([
                 'device_type_id' => $deviceTypeId,
-                'parameter_type_id' => $parameterId,
+                'parameter_id' => $parameterId,
             ]);
         }
         
