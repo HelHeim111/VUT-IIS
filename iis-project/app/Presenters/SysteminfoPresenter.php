@@ -55,6 +55,8 @@ class SysteminfoPresenter extends BasePresenter
         ->where('system_id', $systemId)
         ->fetchAll();
 
+        $this->template->parameters = $this->database->table('Parameters')->fetchAll();
+
         $this->template->devices = [];
         foreach ($deviceSystems as $deviceSystem) {
             $this->template->devices[] = $this->database->table('Devices')
@@ -530,7 +532,6 @@ class SysteminfoPresenter extends BasePresenter
             ->update(['kpi_value' => $kpiResult]);
     
         // Обновляем результаты KPI только для этого параметра
-        $this->template->parameters = $this->database->table('Parameters')->fetchAll();
         $this->template->kpiResults[$parameterId] = $kpiResult;
         $this->template->kpiValue = $values->value;
         $this->template->kpiOperator = $values->operator;
