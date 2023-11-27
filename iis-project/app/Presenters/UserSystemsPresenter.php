@@ -56,11 +56,6 @@ class UserSystemsPresenter extends BasePresenter
             'admin_id' => $userId,
         ]);
 
-        $this->database->table('UserSystems')->insert([
-            'user_id' => $userId,
-            'system_id' => $system->system_id,
-        ]);
-
         $this->flashMessage('System created successfully.', 'success');
         $this->redirect('UserSystems:default');
     }
