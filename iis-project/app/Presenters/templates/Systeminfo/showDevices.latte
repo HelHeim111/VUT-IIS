@@ -9,19 +9,28 @@
                 {foreach $device['parameters'] as $param}
                     <li>
                         {$param['parameter_name']} --- {$param['parameter_value']}
-                        <li>
-                            {control 'kpiForm' . $param['parameter_id']}
-                        </li>
-                                {if isset($kpiResults[$param['parameter_id']])}
-                                    {$kpiResults[$param['parameter_id']] ? 'TRUE' : 'FALSE'}
-                                {/if}
+                        {if $user->isInRole('admin') || $user->getId() == $systemOwner->user_id}
+                            <li>
+                                {control 'kpiForm' . $param['parameter_id']}
+                            </li>
+                        {/if}
+                        KPI_VALUE:
+                        {if isset($parameters[$param['parameter_id']]->kpi_value)}
+                            {$parameters[$param['parameter_id']]->kpi_value ? 'TRUE' : 'FALSE'}
+                        {else}
+                            NULL
+                        {/if}
                     </li>
                 {/foreach}
             </ul>
-            <button id="deleteDevice"><a href="{link Systeminfo:deleteDevice, $systemId, $device['device_id']}">Smazat zařízení</a></button>
-            <button id="editDevice"><a href="{link Systeminfo:editDevice, $systemId, $device['device_id']}">Editovat zařízení</a></button>
+            {if $user->isInRole('admin') || $user->getId() == $systemOwner->user_id}
+                <button id="deleteDevice"><a href="{link Systeminfo:deleteDevice, $systemId, $device['device_id']}">Smazat zařízení</a></button>
+                <button id="editDevice"><a href="{link Systeminfo:editDevice, $systemId, $device['device_id']}">Editovat zařízení</a></button>
+            {/if}
         </div>
     {/foreach}
+    {if $user->isInRole('admin') || $user->getId() == $systemOwner->user_id}
         <button id="showDevices"><a href="{link Systeminfo:createDeviceType, $systemId}">Přidat zařízení s novým typem</a></button>
+    {/if}
         <button id="goBack"><a href="{link Systeminfo:default, $systemId}">Zpět do systemu</a></button>
 {/block}

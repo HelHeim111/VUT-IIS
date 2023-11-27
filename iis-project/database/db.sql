@@ -33,6 +33,7 @@ CREATE TABLE `Parameters` (
     `parameter_name` VARCHAR(32) NOT NULL,
     `parameter_value` FLOAT NOT NULL DEFAULT 0.0,
     `parameter_type_id` INT,
+    `kpi_value` BOOL DEFAULT NULL,
     CONSTRAINT `fk_parameters_parameter_type` FOREIGN KEY (`parameter_type_id`) REFERENCES `ParameterTypes`(`parameter_type_id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -108,9 +109,9 @@ INSERT INTO `Devices` (device_type, device_type_id, description, user_id) VALUES
 INSERT INTO `DeviceTypeParameterType` (device_type_id, parameter_type_id) VALUES (2, 2);
 INSERT INTO `DeviceTypeParameterType` (device_type_id, parameter_type_id) VALUES (2, 3);
 
-INSERT INTO `Parameters` (parameter_name, parameter_value, parameter_type_id) VALUES ('Temperature sensor 1', 17, 1);
-INSERT INTO `Parameters` (parameter_name, parameter_value, parameter_type_id) VALUES ('Humidity sensor 1', 4, 2);
-INSERT INTO `Parameters` (parameter_name, parameter_value, parameter_type_id) VALUES ('Battery level', 99, 3);
+INSERT INTO `Parameters` (parameter_name, parameter_value, parameter_type_id) VALUES ('Temperature sensor 1', 0, 1);
+INSERT INTO `Parameters` (parameter_name, parameter_value, parameter_type_id) VALUES ('Humidity sensor 1', 0, 2);
+INSERT INTO `Parameters` (parameter_name, parameter_value, parameter_type_id) VALUES ('Battery level', 0, 3);
 
 INSERT INTO `DeviceParameters` (device_id, parameter_id) VALUES (1, 1);
 INSERT INTO `DeviceParameters` (device_id, parameter_id) VALUES (4, 2);

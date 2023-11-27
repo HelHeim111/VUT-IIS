@@ -44,6 +44,13 @@ class SysteminfoPresenter extends BasePresenter
                 ->get($userSystem->user_id);
         }
 
+        $userInSystem = $this->database->table('UserSystems')
+            ->where('user_id', $this->user->getId())
+            ->where('system_id', $systemId)
+            ->count() > 0;
+
+        $this->template->userInSystem = $userInSystem;
+
         $deviceSystems = $this->database->table('DeviceSystem')
         ->where('system_id', $systemId)
         ->fetchAll();
@@ -183,6 +190,8 @@ class SysteminfoPresenter extends BasePresenter
     public function renderShowDevices(int $systemId): void
     {
         $this->template->systemId = $systemId;
+        $system = $this->database->table('Systems')->get($systemId);
+        $this->template->systemOwner = $this->database->table('Users')->get($system->admin_id);
 
         $devices = $this->database->table('DeviceSystem')
             ->where('system_id', $systemId)
@@ -378,15 +387,17 @@ class SysteminfoPresenter extends BasePresenter
         $form->addTextArea('device_description', 'Popis')
             ->setDefaultValue($device->description);
 
-        // Add parameters dynamically based on the device
-        $parameters = $this->database->table('DeviceParameters')
-                        ->where('device_id', $deviceId)
-                        ->fetchAll();
+        if ($this->user->isInRole('admin') || $this->user->isInRole('broker')) {
+            // Add parameters dynamically based on the device
+            $parameters = $this->database->table('DeviceParameters')
+                            ->where('device_id', $deviceId)
+                            ->fetchAll();
 
-        foreach ($parameters as $param) {
-            $pararam = $this->database->table('Parameters')->get($param->parameter_id);
-            $form->addText('param_' . $param->parameter_id, 'Parameter: ' . $pararam->parameter_name)
-                ->setDefaultValue($pararam->parameter_value);
+            foreach ($parameters as $param) {
+                $pararam = $this->database->table('Parameters')->get($param->parameter_id);
+                $form->addText('param_' . $param->parameter_id, 'Parameter: ' . $pararam->parameter_name)
+                    ->setDefaultValue($pararam->parameter_value);
+            }
         }
         
         $form->addHidden('systemId', $systemId);
@@ -514,8 +525,12 @@ class SysteminfoPresenter extends BasePresenter
     
         // Вычисляем KPI только для конкретного параметра
         $kpiResult = $this->KPI($values->value, $values->operator, $parameter->parameter_value);
+        $this->database->table('Parameters')
+            ->where('parameter_id', $parameterId)
+            ->update(['kpi_value' => $kpiResult]);
     
         // Обновляем результаты KPI только для этого параметра
+        $this->template->parameters = $this->database->table('Parameters')->fetchAll();
         $this->template->kpiResults[$parameterId] = $kpiResult;
         $this->template->kpiValue = $values->value;
         $this->template->kpiOperator = $values->operator;
