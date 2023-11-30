@@ -7,11 +7,11 @@ services:
     volumes:
       - ./WWW:/var/www/html/WWW
     environment:
-      - DATABASE_URL=mysql://db_user:db_password@db/db_name
+      DATABASE_URL: "mysql://newuser:password@db/iis_db"
   db:
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: db_name
-      MYSQL_USER: db_user
-      MYSQL_PASSWORD: db_password
+      MYSQL_DATABASE: iis_db
+      MYSQL_USER: newuser
+      MYSQL_PASSWORD: password

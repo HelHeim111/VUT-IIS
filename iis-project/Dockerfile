@@ -7,11 +7,16 @@ WORKDIR /var/www/html/WWW
 # Install required extensions
 RUN docker-php-ext-install pdo_mysql
 
-# Copy the current directory contents into the container at /var/www/html/WWW
-COPY . .
+# Enable Apache modules
+RUN a2enmod rewrite
 
-# Make sure Apache has the right permissions
-RUN chown -R www-data:www-data /var/www/html
+# Copy only specific files
+COPY WWW/index.php /var/www/html/WWW/
+COPY .htaccess /var/www/html/WWW/
+# Add any other necessary files
+
+# Ensure that Apache has the right permissions
+RUN chown -R www-data:www-data /var/www/html/WWW
 
 # Expose port 80 to the outside world
 EXPOSE 80
