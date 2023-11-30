@@ -1,5 +1,5 @@
 # Use an official PHP runtime as a parent image
-FROM php:7.4-apache
+FROM php:8.1-apache
 
 # Set the working directory to /var/www/html/WWW
 WORKDIR /var/www/html/WWW
@@ -11,12 +11,20 @@ RUN docker-php-ext-install pdo_mysql
 RUN a2enmod rewrite
 
 # Copy only specific files
-COPY WWW/index.php /var/www/html/WWW/
-COPY .htaccess /var/www/html/WWW/
-# Add any other necessary files
+COPY WWW/index.php ./
+COPY .htaccess ./
+
+# Remove the existing default Apache configuration file
+RUN rm /etc/apache2/sites-available/000-default.conf
+
+# Copy your custom Apache configuration file into the image
+COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
+
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 # Ensure that Apache has the right permissions
-RUN chown -R www-data:www-data /var/www/html/WWW
+RUN chown -R www-data:www-data ./
+RUN 
 
 # Expose port 80 to the outside world
 EXPOSE 80

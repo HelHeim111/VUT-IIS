@@ -2,7 +2,7 @@ parameters:
 
 
 database:
-    dsn: 'mysql:host=localhost;dbname=iis_db'
+    dsn: 'mysql:host=db;dbname=iis_db'
     user: newuser
     password: password
 

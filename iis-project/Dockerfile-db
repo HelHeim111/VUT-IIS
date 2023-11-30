@@ -1,0 +1,7 @@
+# Use an official MySQL image as a parent image
+FROM mysql:5.7
+
+# Add the database dump to the image
+ADD database/db.sql /docker-entrypoint-initdb.d/
+
+# Other MySQL configuration can go here
